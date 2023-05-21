@@ -12,7 +12,7 @@ import { AdminContext } from '../../../contexts';
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
 
 const SubcategoriesPage: FC = () => {
-  const { getSubcategories, subcategories, isLoading } =
+  const { getSubcategories, subcategories, isLoading, error } =
     useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
@@ -41,29 +41,37 @@ const SubcategoriesPage: FC = () => {
         <Loading msg="Cargando Subcategorías" />
       ) : (
         <>
-          {subcategories.subcategories.length === 0 ? (
-            <AlertMsg
-              msg="No existen categorías"
-              title="No hay nada por aquí"
-              type="warning"
-            />
+          {error ? (
+            error.message.map((err) => (
+              <AlertMsg msg={err} title={error.error} type="warning" />
+            ))
           ) : (
             <>
-              <SubcategoriesSelect
-                order={order}
-                setOrder={setOrder}
-                setSort={setSort}
-                sort={sort}
-              />
-              <SubcategoriesTable
-                subcategories={subcategories}
-                limit={limit}
-                page={page}
-                setOffset={setOffset}
-                setLimit={setLimit}
-                setPage={setPage}
-                size={size}
-              />
+              {subcategories.subcategories.length === 0 ? (
+                <AlertMsg
+                  msg="No existen categorías"
+                  title="No hay nada por aquí"
+                  type="warning"
+                />
+              ) : (
+                <>
+                  <SubcategoriesSelect
+                    order={order}
+                    setOrder={setOrder}
+                    setSort={setSort}
+                    sort={sort}
+                  />
+                  <SubcategoriesTable
+                    subcategories={subcategories}
+                    limit={limit}
+                    page={page}
+                    setOffset={setOffset}
+                    setLimit={setLimit}
+                    setPage={setPage}
+                    size={size}
+                  />
+                </>
+              )}
             </>
           )}
         </>

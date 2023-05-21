@@ -78,7 +78,6 @@ export const AuthProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Auth - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Auth - Loading False' });
-      console.log({ error });
       if (axios.isAxiosError(error)) {
         const err = error as AxiosError<ResponseError>;
         dispatch({ type: 'Auth - Error', payload: err.response?.data });

@@ -12,7 +12,7 @@ import {
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
 
 const UsersPage: FC = () => {
-  const { getUsers, users, isLoading } = useContext(AdminContext);
+  const { getUsers, users, isLoading, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
   const [offset, setOffset] = useState(0);
@@ -40,29 +40,37 @@ const UsersPage: FC = () => {
         <Loading msg="Cargando usuarios" />
       ) : (
         <>
-          {users.users.length === 0 ? (
-            <AlertMsg
-              msg="Aún no hay usuairos"
-              title="Usuarios"
-              type="warning"
-            />
+          {error ? (
+            error.message.map((err) => (
+              <AlertMsg msg={err} title={error.error} type="warning" />
+            ))
           ) : (
             <>
-              <UsersSelect
-                order={order}
-                setOrder={setOrder}
-                setSort={setSort}
-                sort={sort}
-              />
-              <UsersTable
-                users={users}
-                limit={limit}
-                page={page}
-                setOffset={setOffset}
-                setLimit={setLimit}
-                setPage={setPage}
-                size={size}
-              />
+              {users.users.length === 0 ? (
+                <AlertMsg
+                  msg="Aún no hay usuairos"
+                  title="Usuarios"
+                  type="warning"
+                />
+              ) : (
+                <>
+                  <UsersSelect
+                    order={order}
+                    setOrder={setOrder}
+                    setSort={setSort}
+                    sort={sort}
+                  />
+                  <UsersTable
+                    users={users}
+                    limit={limit}
+                    page={page}
+                    setOffset={setOffset}
+                    setLimit={setLimit}
+                    setPage={setPage}
+                    size={size}
+                  />
+                </>
+              )}
             </>
           )}
         </>

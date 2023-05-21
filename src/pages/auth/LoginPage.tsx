@@ -23,7 +23,7 @@ const LoginPage: FC = () => {
     <Container>
       <h1>Iniciar sesión</h1>
 
-      {error?.message?.length! > 0 ? (
+      {error ? (
         <>
           {error?.message.map((err) => (
             <AlertMsg msg={err} type="error" title={error.error} />
