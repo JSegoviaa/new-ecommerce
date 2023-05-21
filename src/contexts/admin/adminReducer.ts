@@ -119,7 +119,6 @@ export const adminReducer = (
           colors: { total: 0, variantColors: [] },
           sizes: { total: 0, variantSizes: [] },
         },
-        error: undefined,
       };
 
     case 'Admin - Error':
