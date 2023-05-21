@@ -1,7 +1,13 @@
 import { FC } from 'react';
+import { Outlet } from 'react-router-dom';
 
 const CategoryPage: FC = () => {
-  return <div>CategoryPage</div>;
+  return (
+    <>
+      CategoryPage
+      <Outlet />
+    </>
+  );
 };
 
 export default CategoryPage;
