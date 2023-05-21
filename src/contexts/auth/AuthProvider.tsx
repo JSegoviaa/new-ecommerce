@@ -29,6 +29,8 @@ export const AuthProvider: FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, AUTH_INITIAL_STATE);
 
   useEffect(() => {
+    if (!token) return;
+
     renewToken();
   }, []);
 
@@ -43,9 +45,8 @@ export const AuthProvider: FC<Props> = ({ children }) => {
       localStorage.setItem('token', res.data.token);
 
       dispatch({ type: 'Auth - Loading False' });
+      dispatch({ type: 'Auth - Clear Error' });
     } catch (error) {
-      console.log(error);
-
       dispatch({ type: 'Auth - Loading False' });
 
       if (axios.isAxiosError(error)) {
@@ -56,23 +57,16 @@ export const AuthProvider: FC<Props> = ({ children }) => {
   };
 
   const logout = async (): Promise<void> => {
-    try {
-      dispatch({ type: 'Auth - Loading True' });
+    dispatch({ type: 'Auth - Loading True' });
 
-      localStorage.removeItem('token');
+    localStorage.removeItem('token');
 
-      dispatch({ type: 'Auth - Logout' });
+    dispatch({ type: 'Auth - Logout' });
 
-      dispatch({ type: 'Auth - Loading False' });
-    } catch (error) {
-      console.log(error);
-      dispatch({ type: 'Auth - Loading False' });
-    }
+    dispatch({ type: 'Auth - Loading False' });
   };
 
   const renewToken = useCallback(async (): Promise<void> => {
-    if (!token) return;
-
     try {
       dispatch({ type: 'Auth - Loading True' });
 
@@ -81,11 +75,10 @@ export const AuthProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Auth - Login', payload: res.data });
 
       dispatch({ type: 'Auth - Loading False' });
+      dispatch({ type: 'Auth - Clear Error' });
     } catch (error) {
-      console.log(error);
-
       dispatch({ type: 'Auth - Loading False' });
-
+      console.log({ error });
       if (axios.isAxiosError(error)) {
         const err = error as AxiosError<ResponseError>;
         dispatch({ type: 'Auth - Error', payload: err.response?.data });

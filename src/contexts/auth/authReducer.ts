@@ -4,6 +4,7 @@ import { AuthState } from './';
 type AuthActionsType =
   | { type: 'Auth - Login'; payload: LoginResp }
   | { type: 'Auth - Logout' }
+  | { type: 'Auth - Clear Error' }
   | { type: 'Auth - Loading True' }
   | { type: 'Auth - Loading False' }
   | { type: 'Auth - Error'; payload: ResponseError | undefined };
@@ -32,6 +33,9 @@ export const authReducer = (
 
     case 'Auth - Error':
       return { ...state, isLoading: false, error: action.payload };
+
+    case 'Auth - Clear Error':
+      return { ...state, error: undefined };
 
     default:
       return state;

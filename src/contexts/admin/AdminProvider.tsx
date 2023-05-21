@@ -63,6 +63,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Admin - Get Categories', payload: data });
 
       dispatch({ type: 'Admin - Loading False' });
+      dispatch({ type: 'Admin - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Admin - Loading False' });
 
@@ -86,6 +87,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Admin - Get Subcategories', payload: data });
 
       dispatch({ type: 'Admin - Loading False' });
+      dispatch({ type: 'Admin - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Admin - Loading False' });
 
@@ -110,6 +112,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Admin - Get Products', payload: data });
 
       dispatch({ type: 'Admin - Loading False' });
+      dispatch({ type: 'Admin - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Admin - Loading False' });
 
@@ -133,6 +136,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Admin - Get Users', payload: data });
 
       dispatch({ type: 'Admin - Loading False' });
+      dispatch({ type: 'Admin - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Admin - Loading False' });
 
@@ -156,6 +160,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Admin - Get Tags', payload: data });
 
       dispatch({ type: 'Admin - Loading False' });
+      dispatch({ type: 'Admin - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Admin - Loading False' });
 
@@ -179,6 +184,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Admin - Get Roles', payload: data });
 
       dispatch({ type: 'Admin - Loading False' });
+      dispatch({ type: 'Admin - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Admin - Loading False' });
 
@@ -202,6 +208,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Admin - Get Variant Colors', payload: data });
 
       dispatch({ type: 'Admin - Loading False' });
+      dispatch({ type: 'Admin - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Admin - Loading False' });
 
@@ -225,6 +232,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Admin - Get Variant Sizes', payload: data });
 
       dispatch({ type: 'Admin - Loading False' });
+      dispatch({ type: 'Admin - Clear Error' });
     } catch (error) {
       dispatch({ type: 'Admin - Loading False' });
 
