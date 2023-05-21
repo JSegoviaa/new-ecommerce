@@ -3,6 +3,7 @@ import {
   CategoriesResp,
   ProductsResp,
   QueryData,
+  ResponseError,
   RolesResp,
   SubcatResp,
   TagsResp,
@@ -20,6 +21,7 @@ interface ContextProps {
   variants: { colors: VariantColorsResp; sizes: VariantSizesResp };
   tags: TagsResp;
   roles: RolesResp;
+  error?: ResponseError;
   getCategories: (query: QueryData) => Promise<void>;
   getSubcategories: (query: QueryData) => Promise<void>;
   getUsers: (query: QueryData) => Promise<void>;

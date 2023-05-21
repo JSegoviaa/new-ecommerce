@@ -1,14 +1,17 @@
 import axios from 'axios';
-import { serverApi } from '../env';
+import { ENV_VAR } from '../env';
 
 const token = localStorage.getItem('token');
 
 export const api = axios.create({
-  baseURL: serverApi,
-  headers: { Authorization: 'Bearer ' + token },
+  baseURL: ENV_VAR.serverApi,
+  headers: {
+    Authorization: 'Bearer ' + token,
+    'api-token': ENV_VAR.token,
+  },
 });
 
 export const authApi = axios.create({
-  baseURL: serverApi,
-  headers: { Authorization: 'Bearer ' + token },
+  baseURL: ENV_VAR.serverApi,
+  headers: { Authorization: 'Bearer ' + token, 'api-token': ENV_VAR.token },
 });

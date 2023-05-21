@@ -2,14 +2,14 @@ import { FC, useCallback, useEffect, useReducer } from 'react';
 import axios, { AxiosError } from 'axios';
 
 import { api, authApi } from '../../api';
-import { LoginData, LoginError, LoginResp, User } from '../../interfaces';
+import { LoginData, ResponseError, LoginResp, User } from '../../interfaces';
 import { AuthContext, authReducer } from './';
 
 export interface AuthState {
   isLoggedIn: boolean;
   isLoading: boolean;
   user?: User;
-  error?: LoginError;
+  error?: ResponseError;
 }
 
 interface Props {
@@ -49,7 +49,7 @@ export const AuthProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Auth - Loading False' });
 
       if (axios.isAxiosError(error)) {
-        const err = error as AxiosError<LoginError>;
+        const err = error as AxiosError<ResponseError>;
         dispatch({ type: 'Auth - Error', payload: err.response?.data });
       }
     }
@@ -87,7 +87,7 @@ export const AuthProvider: FC<Props> = ({ children }) => {
       dispatch({ type: 'Auth - Loading False' });
 
       if (axios.isAxiosError(error)) {
-        const err = error as AxiosError<LoginError>;
+        const err = error as AxiosError<ResponseError>;
         dispatch({ type: 'Auth - Error', payload: err.response?.data });
       }
     }

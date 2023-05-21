@@ -1,4 +1,4 @@
-import { LoginError, LoginResp } from '../../interfaces';
+import { ResponseError, LoginResp } from '../../interfaces';
 import { AuthState } from './';
 
 type AuthActionsType =
@@ -6,7 +6,7 @@ type AuthActionsType =
   | { type: 'Auth - Logout' }
   | { type: 'Auth - Loading True' }
   | { type: 'Auth - Loading False' }
-  | { type: 'Auth - Error'; payload: LoginError | undefined };
+  | { type: 'Auth - Error'; payload: ResponseError | undefined };
 
 export const authReducer = (
   state: AuthState,

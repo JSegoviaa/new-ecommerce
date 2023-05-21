@@ -1,10 +1,12 @@
 import { FC, useReducer } from 'react';
+import axios, { AxiosError } from 'axios';
 
 import { api } from '../../api';
 import {
   CategoriesResp,
   ProductsResp,
   QueryData,
+  ResponseError,
   RolesResp,
   SubcatResp,
   TagsResp,
@@ -23,6 +25,7 @@ export interface AdminState {
   tags: TagsResp;
   roles: RolesResp;
   variants: { colors: VariantColorsResp; sizes: VariantSizesResp };
+  error?: ResponseError;
 }
 
 interface Props {
@@ -41,6 +44,7 @@ const ADMIN_INITIAL_STATE: AdminState = {
     colors: { total: 0, variantColors: [] },
     sizes: { total: 0, variantSizes: [] },
   },
+  error: undefined,
 };
 
 export const AdminProvider: FC<Props> = ({ children }) => {
@@ -60,8 +64,13 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       dispatch({ type: 'Admin - Loading False' });
     } catch (error) {
-      console.log(error);
       dispatch({ type: 'Admin - Loading False' });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        dispatch({ type: 'Admin - Logout' });
+      }
     }
   };
 
@@ -78,8 +87,13 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       dispatch({ type: 'Admin - Loading False' });
     } catch (error) {
-      console.log(error);
       dispatch({ type: 'Admin - Loading False' });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        dispatch({ type: 'Admin - Logout' });
+      }
     }
   };
 
@@ -97,8 +111,13 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       dispatch({ type: 'Admin - Loading False' });
     } catch (error) {
-      console.log(error);
       dispatch({ type: 'Admin - Loading False' });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        dispatch({ type: 'Admin - Logout' });
+      }
     }
   };
 
@@ -115,8 +134,13 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       dispatch({ type: 'Admin - Loading False' });
     } catch (error) {
-      console.log(error);
       dispatch({ type: 'Admin - Loading False' });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        dispatch({ type: 'Admin - Logout' });
+      }
     }
   };
 
@@ -133,8 +157,13 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       dispatch({ type: 'Admin - Loading False' });
     } catch (error) {
-      console.log({ error });
       dispatch({ type: 'Admin - Loading False' });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        dispatch({ type: 'Admin - Logout' });
+      }
     }
   };
 
@@ -151,8 +180,13 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       dispatch({ type: 'Admin - Loading False' });
     } catch (error) {
-      console.log({ error });
       dispatch({ type: 'Admin - Loading False' });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        dispatch({ type: 'Admin - Logout' });
+      }
     }
   };
 
@@ -169,8 +203,13 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       dispatch({ type: 'Admin - Loading False' });
     } catch (error) {
-      console.log({ error });
       dispatch({ type: 'Admin - Loading False' });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        dispatch({ type: 'Admin - Logout' });
+      }
     }
   };
 
@@ -187,8 +226,13 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       dispatch({ type: 'Admin - Loading False' });
     } catch (error) {
-      console.log({ error });
       dispatch({ type: 'Admin - Loading False' });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        dispatch({ type: 'Admin - Logout' });
+      }
     }
   };
 

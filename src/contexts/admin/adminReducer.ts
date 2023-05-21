@@ -2,6 +2,7 @@ import { AdminState } from './';
 import {
   CategoriesResp,
   ProductsResp,
+  ResponseError,
   RolesResp,
   SubcatResp,
   TagsResp,
@@ -13,6 +14,9 @@ import {
 type AdminActionsType =
   | { type: 'Admin - Loading True' }
   | { type: 'Admin - Loading False' }
+  | { type: 'Admin - Logout' }
+  | { type: 'Admin - Error'; payload: ResponseError | undefined }
+  | { type: 'Admin - Clear Error' }
   | { type: 'Admin - Get Categories'; payload: CategoriesResp }
   | { type: 'Admin - Get Subcategories'; payload: SubcatResp }
   | { type: 'Admin - Get Users'; payload: UsersResp }
@@ -20,8 +24,7 @@ type AdminActionsType =
   | { type: 'Admin - Get Tags'; payload: TagsResp }
   | { type: 'Admin - Get Roles'; payload: RolesResp }
   | { type: 'Admin - Get Variant Colors'; payload: VariantColorsResp }
-  | { type: 'Admin - Get Variant Sizes'; payload: VariantSizesResp }
-  | { type: 'Admin - Logout' };
+  | { type: 'Admin - Get Variant Sizes'; payload: VariantSizesResp };
 
 export const adminReducer = (
   state: AdminState,
@@ -117,6 +120,12 @@ export const adminReducer = (
           sizes: { total: 0, variantSizes: [] },
         },
       };
+
+    case 'Admin - Error':
+      return { ...state, error: action.payload };
+
+    case 'Admin - Clear Error':
+      return { ...state, error: undefined };
 
     default:
       return state;
