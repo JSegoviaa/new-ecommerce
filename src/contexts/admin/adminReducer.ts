@@ -12,8 +12,7 @@ import {
 } from '../../interfaces';
 
 type AdminActionsType =
-  | { type: 'Admin - Loading True' }
-  | { type: 'Admin - Loading False' }
+  | { type: 'Admin - Loading'; payload: boolean }
   | { type: 'Admin - Logout' }
   | { type: 'Admin - Error'; payload: ResponseError | undefined }
   | { type: 'Admin - Clear Error' }
@@ -31,11 +30,8 @@ export const adminReducer = (
   action: AdminActionsType
 ): AdminState => {
   switch (action.type) {
-    case 'Admin - Loading True':
-      return { ...state, isLoading: true };
-
-    case 'Admin - Loading False':
-      return { ...state, isLoading: false };
+    case 'Admin - Loading':
+      return { ...state, isLoading: action.payload };
 
     case 'Admin - Get Categories':
       return {
@@ -119,6 +115,7 @@ export const adminReducer = (
           colors: { total: 0, variantColors: [] },
           sizes: { total: 0, variantSizes: [] },
         },
+        error: undefined,
       };
 
     case 'Admin - Error':

@@ -3,10 +3,9 @@ import { AuthState } from './';
 
 type AuthActionsType =
   | { type: 'Auth - Login'; payload: LoginResp }
+  | { type: 'Auth - Loading'; payload: boolean }
   | { type: 'Auth - Logout' }
   | { type: 'Auth - Clear Error' }
-  | { type: 'Auth - Loading True' }
-  | { type: 'Auth - Loading False' }
   | { type: 'Auth - Error'; payload: ResponseError | undefined };
 
 export const authReducer = (
@@ -22,14 +21,11 @@ export const authReducer = (
         error: undefined,
       };
 
+    case 'Auth - Loading':
+      return { ...state, isLoading: action.payload };
+
     case 'Auth - Logout':
       return { ...state, isLoggedIn: false, user: undefined, error: undefined };
-
-    case 'Auth - Loading True':
-      return { ...state, isLoading: true };
-
-    case 'Auth - Loading False':
-      return { ...state, isLoading: false };
 
     case 'Auth - Error':
       return { ...state, isLoading: false, error: action.payload };

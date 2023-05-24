@@ -36,7 +36,7 @@ export const AuthProvider: FC<Props> = ({ children }) => {
 
   const login = async (data: LoginData): Promise<void> => {
     try {
-      dispatch({ type: 'Auth - Loading True' });
+      dispatch({ type: 'Auth - Loading', payload: true });
 
       const res = await api.post<LoginResp>('/auth/admin-login', data);
 
@@ -44,10 +44,10 @@ export const AuthProvider: FC<Props> = ({ children }) => {
 
       localStorage.setItem('token', res.data.token);
 
-      dispatch({ type: 'Auth - Loading False' });
+      dispatch({ type: 'Auth - Loading', payload: false });
       dispatch({ type: 'Auth - Clear Error' });
     } catch (error) {
-      dispatch({ type: 'Auth - Loading False' });
+      dispatch({ type: 'Auth - Loading', payload: false });
 
       if (axios.isAxiosError(error)) {
         const err = error as AxiosError<ResponseError>;
@@ -57,29 +57,30 @@ export const AuthProvider: FC<Props> = ({ children }) => {
   };
 
   const logout = async (): Promise<void> => {
-    dispatch({ type: 'Auth - Loading True' });
+    dispatch({ type: 'Auth - Loading', payload: true });
 
     localStorage.removeItem('token');
 
     dispatch({ type: 'Auth - Logout' });
 
-    dispatch({ type: 'Auth - Loading False' });
+    dispatch({ type: 'Auth - Loading', payload: false });
   };
 
   const renewToken = useCallback(async (): Promise<void> => {
     try {
-      dispatch({ type: 'Auth - Loading True' });
+      dispatch({ type: 'Auth - Loading', payload: true });
 
       const res = await authApi.get<LoginResp>('/auth/renew-jwt');
 
       dispatch({ type: 'Auth - Login', payload: res.data });
 
-      dispatch({ type: 'Auth - Loading False' });
+      dispatch({ type: 'Auth - Loading', payload: false });
       dispatch({ type: 'Auth - Clear Error' });
     } catch (error) {
-      dispatch({ type: 'Auth - Loading False' });
+      dispatch({ type: 'Auth - Loading', payload: false });
       if (axios.isAxiosError(error)) {
         const err = error as AxiosError<ResponseError>;
+
         dispatch({ type: 'Auth - Error', payload: err.response?.data });
       }
     }
