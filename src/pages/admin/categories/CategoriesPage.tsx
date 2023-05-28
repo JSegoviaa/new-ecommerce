@@ -7,13 +7,11 @@ import {
   AlertMsg,
   CategoriesSelect,
   CategoriesTable,
-  Loading,
 } from '../../../components';
 import { QueryData, OrderBy, Sort } from '../../../interfaces';
 
 const CategoriesPage: FC = () => {
-  const { getCategories, categories, isLoading, error } =
-    useContext(AdminContext);
+  const { getCategories, categories, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
   const [offset, setOffset] = useState(0);
@@ -37,46 +35,42 @@ const CategoriesPage: FC = () => {
 
   return (
     <Container>
-      {isLoading ? (
-        <Loading msg="Cargando categorías" />
-      ) : (
-        <>
-          {error ? (
-            error.message.map((err) => (
-              <AlertMsg msg={err} title={error.error} type="warning" />
-            ))
-          ) : (
-            <>
-              {' '}
-              {categories.categories.length === 0 ? (
-                <AlertMsg
-                  msg="No existen categorías"
-                  title="No hay nada por aquí"
-                  type="warning"
+      <>
+        {error ? (
+          error.message.map((err) => (
+            <AlertMsg msg={err} title={error.error} type="warning" />
+          ))
+        ) : (
+          <>
+            {' '}
+            {categories.categories.length === 0 ? (
+              <AlertMsg
+                msg="No existen categorías"
+                title="No hay nada por aquí"
+                type="warning"
+              />
+            ) : (
+              <>
+                <CategoriesSelect
+                  order={order}
+                  setOrder={setOrder}
+                  setSort={setSort}
+                  sort={sort}
                 />
-              ) : (
-                <>
-                  <CategoriesSelect
-                    order={order}
-                    setOrder={setOrder}
-                    setSort={setSort}
-                    sort={sort}
-                  />
-                  <CategoriesTable
-                    categories={categories}
-                    limit={limit}
-                    page={page}
-                    setOffset={setOffset}
-                    setLimit={setLimit}
-                    setPage={setPage}
-                    size={size}
-                  />
-                </>
-              )}
-            </>
-          )}
-        </>
-      )}
+                <CategoriesTable
+                  categories={categories}
+                  limit={limit}
+                  page={page}
+                  setOffset={setOffset}
+                  setLimit={setLimit}
+                  setPage={setPage}
+                  size={size}
+                />
+              </>
+            )}
+          </>
+        )}
+      </>
     </Container>
   );
 };

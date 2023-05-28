@@ -1,18 +1,13 @@
 import { Container } from '@mui/material';
 import { FC, useEffect, useContext, useState } from 'react';
-import {
-  AlertMsg,
-  Loading,
-  ProductsSelect,
-  ProductsTable,
-} from '../../../components';
+import { AlertMsg, ProductsSelect, ProductsTable } from '../../../components';
 
 import { title } from '../../../constants';
 import { AdminContext } from '../../../contexts';
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
 
 const ProductsPage: FC = () => {
-  const { getProducts, products, isLoading, error } = useContext(AdminContext);
+  const { getProducts, products, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
   const [offset, setOffset] = useState(0);
@@ -36,45 +31,41 @@ const ProductsPage: FC = () => {
 
   return (
     <Container>
-      {isLoading ? (
-        <Loading msg="Cargando productos" />
-      ) : (
-        <>
-          {error ? (
-            error.message.map((err) => (
-              <AlertMsg msg={err} title={error.error} type="warning" />
-            ))
-          ) : (
-            <>
-              {products.products.length === 0 ? (
-                <AlertMsg
-                  msg="Aún no hay ningún producto"
-                  title="Sin productos"
-                  type="warning"
+      <>
+        {error ? (
+          error.message.map((err) => (
+            <AlertMsg msg={err} title={error.error} type="warning" />
+          ))
+        ) : (
+          <>
+            {products.products.length === 0 ? (
+              <AlertMsg
+                msg="Aún no hay ningún producto"
+                title="Sin productos"
+                type="warning"
+              />
+            ) : (
+              <>
+                <ProductsSelect
+                  order={order}
+                  setOrder={setOrder}
+                  setSort={setSort}
+                  sort={sort}
                 />
-              ) : (
-                <>
-                  <ProductsSelect
-                    order={order}
-                    setOrder={setOrder}
-                    setSort={setSort}
-                    sort={sort}
-                  />
-                  <ProductsTable
-                    products={products}
-                    limit={limit}
-                    page={page}
-                    setOffset={setOffset}
-                    setLimit={setLimit}
-                    setPage={setPage}
-                    size={size}
-                  />
-                </>
-              )}
-            </>
-          )}
-        </>
-      )}
+                <ProductsTable
+                  products={products}
+                  limit={limit}
+                  page={page}
+                  setOffset={setOffset}
+                  setLimit={setLimit}
+                  setPage={setPage}
+                  size={size}
+                />
+              </>
+            )}
+          </>
+        )}
+      </>
     </Container>
   );
 };

@@ -4,15 +4,10 @@ import { Container } from '@mui/material';
 import { title } from '../../../constants';
 import { AdminContext } from '../../../contexts';
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
-import {
-  AlertMsg,
-  Loading,
-  RolesSelect,
-  RolesTable,
-} from '../../../components';
+import { AlertMsg, RolesSelect, RolesTable } from '../../../components';
 
 const RolesPage: FC = () => {
-  const { isLoading, roles, getRoles, error } = useContext(AdminContext);
+  const { roles, getRoles, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
   const [offset, setOffset] = useState(0);
@@ -36,41 +31,37 @@ const RolesPage: FC = () => {
 
   return (
     <Container>
-      {isLoading ? (
-        <Loading msg="Cargando lista de roles" />
-      ) : (
-        <>
-          {error ? (
-            error.message.map((err) => (
-              <AlertMsg msg={err} title={error.error} type="warning" />
-            ))
-          ) : (
-            <>
-              {roles.roles.length === 0 ? (
-                <AlertMsg msg="Aún no hay roles" title="Roles" type="warning" />
-              ) : (
-                <>
-                  <RolesSelect
-                    order={order}
-                    setOrder={setOrder}
-                    setSort={setSort}
-                    sort={sort}
-                  />
-                  <RolesTable
-                    roles={roles}
-                    limit={limit}
-                    page={page}
-                    setOffset={setOffset}
-                    setLimit={setLimit}
-                    setPage={setPage}
-                    size={size}
-                  />
-                </>
-              )}
-            </>
-          )}
-        </>
-      )}
+      <>
+        {error ? (
+          error.message.map((err) => (
+            <AlertMsg msg={err} title={error.error} type="warning" />
+          ))
+        ) : (
+          <>
+            {roles.roles.length === 0 ? (
+              <AlertMsg msg="Aún no hay roles" title="Roles" type="warning" />
+            ) : (
+              <>
+                <RolesSelect
+                  order={order}
+                  setOrder={setOrder}
+                  setSort={setSort}
+                  sort={sort}
+                />
+                <RolesTable
+                  roles={roles}
+                  limit={limit}
+                  page={page}
+                  setOffset={setOffset}
+                  setLimit={setLimit}
+                  setPage={setPage}
+                  size={size}
+                />
+              </>
+            )}
+          </>
+        )}
+      </>
     </Container>
   );
 };

@@ -2,7 +2,6 @@ import { FC, useState, useContext, useEffect } from 'react';
 import { Container } from '@mui/material';
 import {
   AlertMsg,
-  Loading,
   VariantColorsSelect,
   VariantColorsTable,
 } from '../../../../components';
@@ -10,7 +9,7 @@ import { OrderBy, QueryData, Sort } from '../../../../interfaces';
 import { AdminContext } from '../../../../contexts';
 
 const ColorsPage: FC = () => {
-  const { getVariantColors, isLoading, variants } = useContext(AdminContext);
+  const { getVariantColors, variants } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
   const [offset, setOffset] = useState(0);
@@ -30,37 +29,33 @@ const ColorsPage: FC = () => {
 
   return (
     <Container>
-      {isLoading ? (
-        <Loading msg="Cargando variantes de colores" />
-      ) : (
-        <>
-          {variants.colors.variantColors.length === 0 ? (
-            <AlertMsg
-              msg="Aún no hay variantes de colroes"
-              title="Sin variantes de colores"
-              type="warning"
+      <>
+        {variants.colors.variantColors.length === 0 ? (
+          <AlertMsg
+            msg="Aún no hay variantes de colroes"
+            title="Sin variantes de colores"
+            type="warning"
+          />
+        ) : (
+          <>
+            <VariantColorsSelect
+              order={order}
+              setOrder={setOrder}
+              setSort={setSort}
+              sort={sort}
             />
-          ) : (
-            <>
-              <VariantColorsSelect
-                order={order}
-                setOrder={setOrder}
-                setSort={setSort}
-                sort={sort}
-              />
-              <VariantColorsTable
-                limit={limit}
-                page={page}
-                setLimit={setLimit}
-                setOffset={setOffset}
-                setPage={setPage}
-                size={size}
-                variants={variants.colors}
-              />
-            </>
-          )}
-        </>
-      )}
+            <VariantColorsTable
+              limit={limit}
+              page={page}
+              setLimit={setLimit}
+              setOffset={setOffset}
+              setPage={setPage}
+              size={size}
+              variants={variants.colors}
+            />
+          </>
+        )}
+      </>
     </Container>
   );
 };

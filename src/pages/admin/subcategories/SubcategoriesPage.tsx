@@ -3,7 +3,6 @@ import { Container } from '@mui/material';
 
 import {
   AlertMsg,
-  Loading,
   SubcategoriesSelect,
   SubcategoriesTable,
 } from '../../../components';
@@ -12,8 +11,7 @@ import { AdminContext } from '../../../contexts';
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
 
 const SubcategoriesPage: FC = () => {
-  const { getSubcategories, subcategories, isLoading, error } =
-    useContext(AdminContext);
+  const { getSubcategories, subcategories, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
   const [offset, setOffset] = useState(0);
@@ -37,45 +35,41 @@ const SubcategoriesPage: FC = () => {
 
   return (
     <Container>
-      {isLoading ? (
-        <Loading msg="Cargando Subcategorías" />
-      ) : (
-        <>
-          {error ? (
-            error.message.map((err) => (
-              <AlertMsg msg={err} title={error.error} type="warning" />
-            ))
-          ) : (
-            <>
-              {subcategories.subcategories.length === 0 ? (
-                <AlertMsg
-                  msg="No existen categorías"
-                  title="No hay nada por aquí"
-                  type="warning"
+      <>
+        {error ? (
+          error.message.map((err) => (
+            <AlertMsg msg={err} title={error.error} type="warning" />
+          ))
+        ) : (
+          <>
+            {subcategories.subcategories.length === 0 ? (
+              <AlertMsg
+                msg="No existen categorías"
+                title="No hay nada por aquí"
+                type="warning"
+              />
+            ) : (
+              <>
+                <SubcategoriesSelect
+                  order={order}
+                  setOrder={setOrder}
+                  setSort={setSort}
+                  sort={sort}
                 />
-              ) : (
-                <>
-                  <SubcategoriesSelect
-                    order={order}
-                    setOrder={setOrder}
-                    setSort={setSort}
-                    sort={sort}
-                  />
-                  <SubcategoriesTable
-                    subcategories={subcategories}
-                    limit={limit}
-                    page={page}
-                    setOffset={setOffset}
-                    setLimit={setLimit}
-                    setPage={setPage}
-                    size={size}
-                  />
-                </>
-              )}
-            </>
-          )}
-        </>
-      )}
+                <SubcategoriesTable
+                  subcategories={subcategories}
+                  limit={limit}
+                  page={page}
+                  setOffset={setOffset}
+                  setLimit={setLimit}
+                  setPage={setPage}
+                  size={size}
+                />
+              </>
+            )}
+          </>
+        )}
+      </>
     </Container>
   );
 };

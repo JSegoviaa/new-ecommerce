@@ -5,16 +5,11 @@ import AddIcon from '@mui/icons-material/Add';
 
 import { title } from '../../../constants';
 import { AdminContext } from '../../../contexts';
-import {
-  AlertMsg,
-  Loading,
-  UsersSelect,
-  UsersTable,
-} from '../../../components';
+import { AlertMsg, UsersSelect, UsersTable } from '../../../components';
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
 
 const UsersPage: FC = () => {
-  const { getUsers, users, isLoading, error } = useContext(AdminContext);
+  const { getUsers, users, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
   const [offset, setOffset] = useState(0);
@@ -41,48 +36,44 @@ const UsersPage: FC = () => {
 
   return (
     <Container>
-      {isLoading ? (
-        <Loading msg="Cargando usuarios" />
-      ) : (
-        <>
-          {error ? (
-            error.message.map((err) => (
-              <AlertMsg msg={err} title={error.error} type="warning" />
-            ))
-          ) : (
-            <>
-              {users.users.length === 0 ? (
-                <AlertMsg
-                  msg="Aún no hay usuairos"
-                  title="Usuarios"
-                  type="warning"
+      <>
+        {error ? (
+          error.message.map((err) => (
+            <AlertMsg msg={err} title={error.error} type="warning" />
+          ))
+        ) : (
+          <>
+            {users.users.length === 0 ? (
+              <AlertMsg
+                msg="Aún no hay usuairos"
+                title="Usuarios"
+                type="warning"
+              />
+            ) : (
+              <>
+                <UsersSelect
+                  order={order}
+                  setOrder={setOrder}
+                  setSort={setSort}
+                  sort={sort}
                 />
-              ) : (
-                <>
-                  <UsersSelect
-                    order={order}
-                    setOrder={setOrder}
-                    setSort={setSort}
-                    sort={sort}
-                  />
-                  <UsersTable
-                    users={users}
-                    limit={limit}
-                    page={page}
-                    setOffset={setOffset}
-                    setLimit={setLimit}
-                    setPage={setPage}
-                    size={size}
-                  />
-                  <Fab onClick={handleRedirect}>
-                    <AddIcon />
-                  </Fab>
-                </>
-              )}
-            </>
-          )}
-        </>
-      )}
+                <UsersTable
+                  users={users}
+                  limit={limit}
+                  page={page}
+                  setOffset={setOffset}
+                  setLimit={setLimit}
+                  setPage={setPage}
+                  size={size}
+                />
+                <Fab onClick={handleRedirect}>
+                  <AddIcon />
+                </Fab>
+              </>
+            )}
+          </>
+        )}
+      </>
     </Container>
   );
 };

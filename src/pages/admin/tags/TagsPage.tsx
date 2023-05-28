@@ -4,10 +4,10 @@ import { Container } from '@mui/material';
 import { title } from '../../../constants';
 import { AdminContext } from '../../../contexts';
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
-import { AlertMsg, Loading, TagsSelect, TagsTable } from '../../../components';
+import { AlertMsg, TagsSelect, TagsTable } from '../../../components';
 
 const TagsPage: FC = () => {
-  const { tags, isLoading, getTags, error } = useContext(AdminContext);
+  const { tags, getTags, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
   const [offset, setOffset] = useState(0);
@@ -31,45 +31,41 @@ const TagsPage: FC = () => {
 
   return (
     <Container>
-      {isLoading ? (
-        <Loading msg="Cargando etiquetas" />
-      ) : (
-        <>
-          {error ? (
-            error.message.map((err) => (
-              <AlertMsg msg={err} title={error.error} type="warning" />
-            ))
-          ) : (
-            <>
-              {tags.tags.length === 0 ? (
-                <AlertMsg
-                  msg="Aún no hay etiquetas"
-                  title="Sin etiquetas"
-                  type="warning"
+      <>
+        {error ? (
+          error.message.map((err) => (
+            <AlertMsg msg={err} title={error.error} type="warning" />
+          ))
+        ) : (
+          <>
+            {tags.tags.length === 0 ? (
+              <AlertMsg
+                msg="Aún no hay etiquetas"
+                title="Sin etiquetas"
+                type="warning"
+              />
+            ) : (
+              <>
+                <TagsSelect
+                  order={order}
+                  setOrder={setOrder}
+                  setSort={setSort}
+                  sort={sort}
                 />
-              ) : (
-                <>
-                  <TagsSelect
-                    order={order}
-                    setOrder={setOrder}
-                    setSort={setSort}
-                    sort={sort}
-                  />
-                  <TagsTable
-                    tags={tags}
-                    limit={limit}
-                    page={page}
-                    setOffset={setOffset}
-                    setLimit={setLimit}
-                    setPage={setPage}
-                    size={size}
-                  />
-                </>
-              )}
-            </>
-          )}
-        </>
-      )}
+                <TagsTable
+                  tags={tags}
+                  limit={limit}
+                  page={page}
+                  setOffset={setOffset}
+                  setLimit={setLimit}
+                  setPage={setPage}
+                  size={size}
+                />
+              </>
+            )}
+          </>
+        )}
+      </>
     </Container>
   );
 };
