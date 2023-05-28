@@ -1,8 +1,8 @@
 import { FC, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
-import { CreateUser } from '../../../interfaces';
+import { CreateUser, User } from '../../../interfaces';
 import {
   Button,
   MenuItem,
@@ -13,14 +13,34 @@ import {
   FormControl,
 } from '@mui/material';
 import { AdminContext } from '../../../contexts';
-import { AlertMsg } from '../../ui';
+import { AlertMsg, SnackbarAlert } from '../../ui';
 
 const UsersForm: FC = () => {
-  const { createUser, getRoles, roles, error } = useContext(AdminContext);
+  const {
+    createUser,
+    getRoles,
+    roles,
+    error,
+    clearSuccessMessage,
+    alert,
+    users,
+    updateUser,
+  } = useContext(AdminContext);
   const [role, setRole] = useState('4');
+  const [user, setUser] = useState<User>();
+  const [isEditUser, setIsEditUser] = useState(false);
   const navigate = useNavigate();
+  const params = useParams();
   const { register, handleSubmit, formState } = useForm<CreateUser>({
     mode: 'onChange',
+    values: {
+      email: user?.email ? user.email : '',
+      firstName: user?.firstName ? user.firstName : '',
+      lastName: user?.lastName ? user.lastName : '',
+      phoneNumber: user?.phoneNumber ? user.phoneNumber : '',
+      password: '',
+      role: user?.role.id ? user.role.id : 4,
+    },
   });
 
   const onChangeRole = (e: SelectChangeEvent) => {
@@ -28,12 +48,46 @@ const UsersForm: FC = () => {
   };
 
   const onSubmit = async (e: CreateUser): Promise<void> => {
+    if (isEditUser) {
+      const resp = await updateUser({
+        email: e.email,
+        firstName: e.firstName,
+        lastName: e.lastName,
+        phoneNumber: e.phoneNumber,
+        updatedAt: user?.updatedAt ? user?.updatedAt : '',
+        createdAt: user?.createdAt ? user?.createdAt : '',
+        id: user?.id ? user.id : 1,
+        role: { id: Number(role), role: user?.role.role ? user.role.role : '' },
+        isActive: user?.isActive ? user.isActive : false,
+        password: e.password,
+      });
+      if (resp) {
+        navigate('/usuarios');
+        return;
+      }
+    }
+
     const resp = await createUser({ ...e, role: Number(role) });
     if (resp) {
       navigate('/usuarios');
       return;
     }
   };
+
+  const onCloseSnackbar = (): void => {
+    clearSuccessMessage();
+  };
+
+  useEffect(() => {
+    if (params.id) {
+      setIsEditUser(true);
+      setUser(users.users.find((user) => user.id === Number(params.id)));
+      const role = String(
+        users.users.find((user) => user.id === Number(params.id))?.role.id
+      );
+      setRole(role);
+    }
+  }, []);
 
   useEffect(() => {
     getRoles({ order: 'id', sort: 'ASC', limit: 4 });
@@ -51,6 +105,7 @@ const UsersForm: FC = () => {
         <TextField
           label="Nombre"
           type="text"
+          focused={user?.firstName ? true : false}
           autoComplete="off"
           {...register('firstName', {
             required: 'El nombre del usuario es obligatorio.',
@@ -61,6 +116,7 @@ const UsersForm: FC = () => {
         <TextField
           label="Apellidos"
           type="text"
+          focused={user?.lastName ? true : false}
           autoComplete="off"
           {...register('lastName', {
             required: 'Los apellidos son obligatorios.',
@@ -68,10 +124,20 @@ const UsersForm: FC = () => {
         />
         <br />
         <br />
+        <TextField
+          label="Número telefónico"
+          type="text"
+          focused={user?.phoneNumber ? true : false}
+          autoComplete="off"
+          {...register('phoneNumber')}
+        />
+        <br />
+        <br />
 
         <TextField
           label="Correo electrónico"
           type="email"
+          focused={user?.email ? true : false}
           autoComplete="off"
           {...register('email', {
             required: 'El correo electrónico es obligatorio.',
@@ -84,8 +150,11 @@ const UsersForm: FC = () => {
           type="password"
           autoComplete="off"
           {...register('password', {
-            required: 'La contraseña es obligatoria.',
-            minLength: 6,
+            required: {
+              message: isEditUser ? '' : 'La contraseña es obligatoria',
+              value: !isEditUser,
+            },
+            minLength: isEditUser ? 0 : 6,
           })}
         />
         <br />
@@ -109,10 +178,19 @@ const UsersForm: FC = () => {
 
         <br />
         <br />
+
         <Button disabled={!formState.isValid} type="submit">
-          Crear usuario
+          {isEditUser ? 'Editar usuario' : 'Crear usuario'}
         </Button>
       </form>
+      <SnackbarAlert
+        autoHideDuration={6000}
+        message={alert.message}
+        open={alert.isOpen}
+        position={{ horizontal: 'right', vertical: 'top' }}
+        type="success"
+        onClose={onCloseSnackbar}
+      />
     </>
   );
 };

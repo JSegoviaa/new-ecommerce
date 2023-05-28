@@ -12,6 +12,7 @@ export interface CreateUser {
   email: string;
   password: string;
   role: number;
+  phoneNumber?: string;
 }
 
 export interface UserCreated {

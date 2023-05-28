@@ -110,7 +110,11 @@ const UsersTable: FC<Props> = (props) => {
   const onIsActiveUser = async (): Promise<void> => {
     onClosePopup();
     if (selectedUser) {
-      await updateUser({ ...selectedUser, isActive: !selectedUser.isActive });
+      await updateUser({
+        ...selectedUser,
+        isActive: !selectedUser.isActive,
+        role: { ...selectedUser.role, id: selectedUser.role.id },
+      });
     }
   };
 

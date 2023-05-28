@@ -160,6 +160,11 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       await api.post<UserCreated>('/users', user);
       dispatch({ type: 'Admin - Loading', payload: false });
 
+      dispatch({
+        type: 'Admin - Open Message',
+        payload: 'Usuario creado correctamente',
+      });
+
       dispatch({ type: 'Admin - Clear Error' });
       return true;
     } catch (error) {
@@ -175,11 +180,15 @@ export const AdminProvider: FC<Props> = ({ children }) => {
   const updateUser = async (user: User | undefined): Promise<boolean> => {
     try {
       if (user) {
-        const { id, phoneNumber, createdAt, updatedAt, role, ...rest } = user;
+        const { id, createdAt, updatedAt, password, ...rest } = user;
 
         dispatch({ type: 'Admin - Loading', payload: true });
 
-        await api.put(`/users/${user?.id}`, rest);
+        await api.put(`/users/${user?.id}`, {
+          ...rest,
+          role: rest.role.id,
+          ...(password && { password }),
+        });
 
         dispatch({ type: 'Admin - Update User', payload: user });
 
