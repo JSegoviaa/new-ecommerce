@@ -1,15 +1,18 @@
-import { FC, useReducer } from 'react';
+import { FC, useCallback, useReducer } from 'react';
 import axios, { AxiosError } from 'axios';
 
 import { api } from '../../api';
 import {
   CategoriesResp,
+  CreateUser,
   ProductsResp,
   QueryData,
   ResponseError,
   RolesResp,
   SubcatResp,
   TagsResp,
+  User,
+  UserCreated,
   UsersResp,
   VariantColorsResp,
   VariantSizesResp,
@@ -26,6 +29,7 @@ export interface AdminState {
   roles: RolesResp;
   variants: { colors: VariantColorsResp; sizes: VariantSizesResp };
   error?: ResponseError;
+  alert: { message: string; isOpen: boolean };
 }
 
 interface Props {
@@ -45,6 +49,7 @@ const ADMIN_INITIAL_STATE: AdminState = {
     sizes: { total: 0, variantSizes: [] },
   },
   error: undefined,
+  alert: { isOpen: false, message: '' },
 };
 
 export const AdminProvider: FC<Props> = ({ children }) => {
@@ -124,7 +129,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
     }
   };
 
-  const getUsers = async (query: QueryData): Promise<void> => {
+  const getUsers = useCallback(async (query: QueryData): Promise<void> => {
     const { order, sort, limit, offset } = query;
     try {
       dispatch({ type: 'Admin - Loading', payload: true });
@@ -145,6 +150,85 @@ export const AdminProvider: FC<Props> = ({ children }) => {
         dispatch({ type: 'Admin - Logout' });
         dispatch({ type: 'Admin - Error', payload: err.response?.data });
       }
+    }
+  }, []);
+
+  const createUser = async (user: CreateUser): Promise<boolean> => {
+    try {
+      dispatch({ type: 'Admin - Loading', payload: true });
+
+      await api.post<UserCreated>('/users', user);
+      dispatch({ type: 'Admin - Loading', payload: false });
+
+      dispatch({ type: 'Admin - Clear Error' });
+      return true;
+    } catch (error) {
+      dispatch({ type: 'Admin - Loading', payload: false });
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+      }
+      return false;
+    }
+  };
+
+  const updateUser = async (user: User | undefined): Promise<boolean> => {
+    try {
+      if (user) {
+        const { id, phoneNumber, createdAt, updatedAt, role, ...rest } = user;
+
+        dispatch({ type: 'Admin - Loading', payload: true });
+
+        await api.put(`/users/${user?.id}`, rest);
+
+        dispatch({ type: 'Admin - Update User', payload: user });
+
+        dispatch({ type: 'Admin - Loading', payload: false });
+
+        dispatch({
+          type: 'Admin - Open Message',
+          payload: 'El usuario se ha actualizado correctamente',
+        });
+
+        dispatch({ type: 'Admin - Clear Error' });
+      }
+      return true;
+    } catch (error) {
+      dispatch({ type: 'Admin - Loading', payload: false });
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+      }
+      return false;
+    }
+  };
+
+  const deleteUser = async (userId: number): Promise<boolean> => {
+    try {
+      dispatch({ type: 'Admin - Loading', payload: true });
+
+      await api.delete(`/users/${userId}`);
+
+      dispatch({ type: 'Admin - Delete User', payload: userId });
+
+      dispatch({ type: 'Admin - Loading', payload: false });
+
+      dispatch({
+        type: 'Admin - Open Message',
+        payload: 'El usuario se ha eliminado correctamente',
+      });
+
+      dispatch({ type: 'Admin - Clear Error' });
+      return true;
+    } catch (error) {
+      dispatch({ type: 'Admin - Loading', payload: false });
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+      }
+      return false;
     }
   };
 
@@ -246,6 +330,10 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
   const adminLogout = (): void => dispatch({ type: 'Admin - Logout' });
 
+  const clearSuccessMessage = (): void => {
+    dispatch({ type: 'Admin - Close Message' });
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -254,11 +342,15 @@ export const AdminProvider: FC<Props> = ({ children }) => {
         adminLogout,
         getSubcategories,
         getUsers,
+        createUser,
+        updateUser,
+        deleteUser,
         getProducts,
         getTags,
         getRoles,
         getVariantColors,
         getVariantSizes,
+        clearSuccessMessage,
       }}
     >
       {children}

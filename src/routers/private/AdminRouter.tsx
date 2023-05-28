@@ -13,6 +13,7 @@ import {
   SizesPage,
   SubcategoriesPage,
   TagsPage,
+  UserPage,
   UsersPage,
   VariantsPage,
 } from '../../pages';
@@ -31,6 +32,8 @@ const AdminRouter: FC = () => {
         <Route path="/subcategorias" element={<SubcategoriesPage />} />
         <Route path="/etiquetas" element={<TagsPage />} />
         <Route path="/usuarios" element={<UsersPage />} />
+        <Route path="/usuarios/crear" element={<UserPage />} />
+        <Route path="/usuarios/:id" element={<UserPage />} />
         <Route path="/variantes/*" element={<VariantsPage />}>
           <Route path="colores" element={<ColorsPage />} />
           <Route path="tamanos" element={<SizesPage />} />

@@ -6,6 +6,7 @@ import {
   RolesResp,
   SubcatResp,
   TagsResp,
+  User,
   UsersResp,
   VariantColorsResp,
   VariantSizesResp,
@@ -15,10 +16,14 @@ type AdminActionsType =
   | { type: 'Admin - Loading'; payload: boolean }
   | { type: 'Admin - Logout' }
   | { type: 'Admin - Error'; payload: ResponseError | undefined }
+  | { type: 'Admin - Open Message'; payload: string }
+  | { type: 'Admin - Close Message' }
   | { type: 'Admin - Clear Error' }
   | { type: 'Admin - Get Categories'; payload: CategoriesResp }
   | { type: 'Admin - Get Subcategories'; payload: SubcatResp }
   | { type: 'Admin - Get Users'; payload: UsersResp }
+  | { type: 'Admin - Update User'; payload: User }
+  | { type: 'Admin - Delete User'; payload: number }
   | { type: 'Admin - Get Products'; payload: ProductsResp }
   | { type: 'Admin - Get Tags'; payload: TagsResp }
   | { type: 'Admin - Get Roles'; payload: RolesResp }
@@ -32,6 +37,18 @@ export const adminReducer = (
   switch (action.type) {
     case 'Admin - Loading':
       return { ...state, isLoading: action.payload };
+
+    case 'Admin - Open Message':
+      return {
+        ...state,
+        alert: { isOpen: true, message: action.payload },
+      };
+
+    case 'Admin - Close Message':
+      return {
+        ...state,
+        alert: { ...state.alert, isOpen: false },
+      };
 
     case 'Admin - Get Categories':
       return {
@@ -55,6 +72,37 @@ export const adminReducer = (
       return {
         ...state,
         users: { users: action.payload.users, total: action.payload.total },
+      };
+
+    case 'Admin - Update User':
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          users: state.users.users.map((user) => {
+            if (user.id === action.payload.id) {
+              return {
+                ...user,
+                isActive: action.payload.isActive,
+                email: action.payload.email,
+                firstName: action.payload.firstName,
+                lastName: action.payload.lastName,
+                phoneNumber: action.payload.phoneNumber,
+                role: action.payload.role,
+              };
+            }
+            return user;
+          }),
+        },
+      };
+
+    case 'Admin - Delete User':
+      return {
+        ...state,
+        users: {
+          total: state.users.total - 1,
+          users: state.users.users.filter((user) => user.id !== action.payload),
+        },
       };
 
     case 'Admin - Get Products':
