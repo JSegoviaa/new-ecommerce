@@ -4,11 +4,13 @@ import { Container, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 import { title } from '../../../constants';
-import { AdminContext } from '../../../contexts';
+import { AdminContext, AuthContext } from '../../../contexts';
 import { AlertMsg, UsersSelect, UsersTable } from '../../../components';
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
+import { isSuperAdminRole } from '../../../helpers';
 
 const UsersPage: FC = () => {
+  const { user } = useContext(AuthContext);
   const { getUsers, users, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
@@ -20,11 +22,13 @@ const UsersPage: FC = () => {
 
   const handleRedirect = () => navigate('/usuarios/crear');
 
+  const isValidAdmin = isSuperAdminRole(user?.role.id);
+
   const query: QueryData = { order, sort, offset, limit };
 
   useEffect(() => {
     getUsers(query);
-  }, [order, sort, offset, limit, users.total]);
+  }, [order, sort, offset, limit]);
 
   useEffect(() => {
     setSize(users.total);
@@ -37,42 +41,43 @@ const UsersPage: FC = () => {
   return (
     <Container>
       <>
-        {error ? (
-          error.message.map((err) => (
-            <AlertMsg msg={err} title={error.error} type="warning" />
-          ))
-        ) : (
-          <>
-            {users.users.length === 0 ? (
-              <AlertMsg
-                msg="Aún no hay usuairos"
-                title="Usuarios"
-                type="warning"
+        {error
+          ? error.message.map((err) => (
+              <AlertMsg msg={err} title={error.error} type="warning" />
+            ))
+          : null}
+        <>
+          {users.users.length === 0 ? (
+            <AlertMsg
+              msg="Aún no hay usuarios"
+              title="Usuarios"
+              type="warning"
+            />
+          ) : (
+            <>
+              <UsersSelect
+                order={order}
+                setOrder={setOrder}
+                setSort={setSort}
+                sort={sort}
               />
-            ) : (
-              <>
-                <UsersSelect
-                  order={order}
-                  setOrder={setOrder}
-                  setSort={setSort}
-                  sort={sort}
-                />
-                <UsersTable
-                  users={users}
-                  limit={limit}
-                  page={page}
-                  setOffset={setOffset}
-                  setLimit={setLimit}
-                  setPage={setPage}
-                  size={size}
-                />
+              <UsersTable
+                users={users}
+                limit={limit}
+                page={page}
+                setOffset={setOffset}
+                setLimit={setLimit}
+                setPage={setPage}
+                size={size}
+              />
+              {isValidAdmin ? (
                 <Fab onClick={handleRedirect}>
                   <AddIcon />
                 </Fab>
-              </>
-            )}
-          </>
-        )}
+              ) : null}
+            </>
+          )}
+        </>
       </>
     </Container>
   );

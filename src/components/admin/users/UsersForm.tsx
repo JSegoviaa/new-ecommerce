@@ -12,10 +12,17 @@ import {
   InputLabel,
   FormControl,
 } from '@mui/material';
-import { AdminContext } from '../../../contexts';
+import { AdminContext, AuthContext } from '../../../contexts';
 import { AlertMsg, SnackbarAlert } from '../../ui';
+import {
+  isEmail,
+  isPhone,
+  isSuperAdminRole,
+  isValidPassword,
+} from '../../../helpers';
 
 const UsersForm: FC = () => {
+  const { user: authUser } = useContext(AuthContext);
   const {
     createUser,
     getRoles,
@@ -42,6 +49,7 @@ const UsersForm: FC = () => {
       role: user?.role.id ? user.role.id : 4,
     },
   });
+  const { errors, isValid } = formState;
 
   const onChangeRole = (e: SelectChangeEvent) => {
     setRole(e.target.value);
@@ -78,6 +86,8 @@ const UsersForm: FC = () => {
     clearSuccessMessage();
   };
 
+  const isValidAdmin = isSuperAdminRole(authUser?.role.id);
+
   useEffect(() => {
     if (params.id) {
       setIsEditUser(true);
@@ -105,31 +115,42 @@ const UsersForm: FC = () => {
         <TextField
           label="Nombre"
           type="text"
+          fullWidth
           focused={user?.firstName ? true : false}
           autoComplete="off"
           {...register('firstName', {
             required: 'El nombre del usuario es obligatorio.',
           })}
+          error={!!errors.firstName}
+          helperText={errors.firstName?.message}
         />
         <br />
         <br />
         <TextField
           label="Apellidos"
           type="text"
+          fullWidth
           focused={user?.lastName ? true : false}
           autoComplete="off"
           {...register('lastName', {
             required: 'Los apellidos son obligatorios.',
           })}
+          error={!!errors.lastName}
+          helperText={errors.lastName?.message}
         />
         <br />
         <br />
         <TextField
           label="Número telefónico"
           type="text"
+          fullWidth
           focused={user?.phoneNumber ? true : false}
           autoComplete="off"
-          {...register('phoneNumber')}
+          {...register('phoneNumber', {
+            validate: isPhone,
+          })}
+          error={!!errors.phoneNumber}
+          helperText={errors.phoneNumber?.message}
         />
         <br />
         <br />
@@ -139,9 +160,13 @@ const UsersForm: FC = () => {
           type="email"
           focused={user?.email ? true : false}
           autoComplete="off"
+          fullWidth
           {...register('email', {
             required: 'El correo electrónico es obligatorio.',
+            validate: isEmail,
           })}
+          error={!!errors.email}
+          helperText={errors.email?.message}
         />
         <br />
         <br />
@@ -149,37 +174,42 @@ const UsersForm: FC = () => {
           label="Contraseña"
           type="password"
           autoComplete="off"
+          fullWidth
           {...register('password', {
             required: {
               message: isEditUser ? '' : 'La contraseña es obligatoria',
               value: !isEditUser,
             },
-            minLength: isEditUser ? 0 : 6,
+            validate: isEditUser ? undefined : isValidPassword,
           })}
+          error={!!errors.password}
+          helperText={errors.password?.message}
         />
         <br />
         <br />
-        <FormControl>
-          <InputLabel id="demo-simple-select-label">Rol</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            value={role}
-            onChange={onChangeRole}
-            label="Selecciona rol de usuario"
-            placeholder="Selecciona rol de usuario"
-          >
-            {roles.roles.map((role) => (
-              <MenuItem key={role.id} value={role.id}>
-                {role.role}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {isValidAdmin ? (
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Rol</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              value={role}
+              onChange={onChangeRole}
+              label="Selecciona rol de usuario"
+              placeholder="Selecciona rol de usuario"
+            >
+              {roles.roles.map((role) => (
+                <MenuItem key={role.id} value={role.id}>
+                  {role.role}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        ) : null}
 
         <br />
         <br />
 
-        <Button disabled={!formState.isValid} type="submit">
+        <Button disabled={!isValid} type="submit">
           {isEditUser ? 'Editar usuario' : 'Crear usuario'}
         </Button>
       </form>

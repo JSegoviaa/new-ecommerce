@@ -30,8 +30,8 @@ import {
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import { User, UsersResp } from '../../../interfaces';
-import { formatedDate } from '../../../helpers';
-import { AdminContext } from '../../../contexts';
+import { formatedDate, isSuperAdminRole } from '../../../helpers';
+import { AdminContext, AuthContext } from '../../../contexts';
 import { SnackbarAlert } from '../../ui';
 
 interface Props {
@@ -46,6 +46,7 @@ interface Props {
 
 const UsersTable: FC<Props> = (props) => {
   const { users, limit, page, setOffset, setLimit, setPage, size } = props;
+  const { user } = useContext(AuthContext);
   const { updateUser, deleteUser, alert, clearSuccessMessage } =
     useContext(AdminContext);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -124,6 +125,8 @@ const UsersTable: FC<Props> = (props) => {
     onCloseDialog();
   };
 
+  const isValidAdmin = isSuperAdminRole(user?.role.id);
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }}>
@@ -199,11 +202,14 @@ const UsersTable: FC<Props> = (props) => {
           <Button variant="text" onClick={onIsActiveUser} sx={{ p: 2 }}>
             {selectedUser?.isActive ? 'Desactivar usuario' : 'Activar usuario'}
           </Button>
-          <Divider />
-          <Button variant="text" onClick={onOpenDialog} sx={{ p: 2 }}>
-            Eliminar usuario
-          </Button>
-          <Divider />
+          {isValidAdmin ? (
+            <>
+              <Divider />
+              <Button variant="text" onClick={onOpenDialog} sx={{ p: 2 }}>
+                Eliminar usuario
+              </Button>
+            </>
+          ) : null}
         </Popover>
       </Table>
 

@@ -1,4 +1,11 @@
-import { FC, useCallback, useReducer } from 'react';
+import {
+  FC,
+  useCallback,
+  useReducer,
+  useState,
+  useEffect,
+  useContext,
+} from 'react';
 import axios, { AxiosError } from 'axios';
 
 import { api } from '../../api';
@@ -18,6 +25,7 @@ import {
   VariantSizesResp,
 } from '../../interfaces';
 import { AdminContext, adminReducer } from './';
+import { AuthContext } from '../auth';
 
 export interface AdminState {
   isLoading: boolean;
@@ -53,7 +61,9 @@ const ADMIN_INITIAL_STATE: AdminState = {
 };
 
 export const AdminProvider: FC<Props> = ({ children }) => {
+  const { user } = useContext(AuthContext);
   const [state, dispatch] = useReducer(adminReducer, ADMIN_INITIAL_STATE);
+  const [token, setToken] = useState('');
 
   const getCategories = async (query: QueryData): Promise<void> => {
     const { order, sort, limit, offset } = query;
@@ -129,35 +139,41 @@ export const AdminProvider: FC<Props> = ({ children }) => {
     }
   };
 
-  const getUsers = useCallback(async (query: QueryData): Promise<void> => {
-    const { order, sort, limit, offset } = query;
-    try {
-      dispatch({ type: 'Admin - Loading', payload: true });
+  const getUsers = useCallback(
+    async (query: QueryData): Promise<void> => {
+      const { order, sort, limit, offset } = query;
+      try {
+        dispatch({ type: 'Admin - Loading', payload: true });
 
-      const { data } = await api.get<UsersResp>('/users', {
-        params: { order, sort, limit, offset },
-      });
+        const { data } = await api.get<UsersResp>('/users', {
+          params: { order, sort, limit, offset },
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      dispatch({ type: 'Admin - Get Users', payload: data });
+        dispatch({ type: 'Admin - Get Users', payload: data });
 
-      dispatch({ type: 'Admin - Loading', payload: false });
-      dispatch({ type: 'Admin - Clear Error' });
-    } catch (error) {
-      dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Clear Error' });
+      } catch (error) {
+        dispatch({ type: 'Admin - Loading', payload: false });
 
-      if (axios.isAxiosError(error)) {
-        const err = error as AxiosError<ResponseError>;
-        dispatch({ type: 'Admin - Logout' });
-        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        if (axios.isAxiosError(error)) {
+          const err = error as AxiosError<ResponseError>;
+          dispatch({ type: 'Admin - Logout' });
+          dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        }
       }
-    }
-  }, []);
+    },
+    [token]
+  );
 
   const createUser = async (user: CreateUser): Promise<boolean> => {
     try {
       dispatch({ type: 'Admin - Loading', payload: true });
 
-      await api.post<UserCreated>('/users', user);
+      await api.post<UserCreated>('/users', user, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       dispatch({ type: 'Admin - Loading', payload: false });
 
       dispatch({
@@ -184,11 +200,15 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
         dispatch({ type: 'Admin - Loading', payload: true });
 
-        await api.put(`/users/${user?.id}`, {
-          ...rest,
-          role: rest.role.id,
-          ...(password && { password }),
-        });
+        await api.put(
+          `/users/${user?.id}`,
+          {
+            ...rest,
+            role: rest.role.id,
+            ...(password && { password }),
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
         dispatch({ type: 'Admin - Update User', payload: user });
 
@@ -217,7 +237,9 @@ export const AdminProvider: FC<Props> = ({ children }) => {
     try {
       dispatch({ type: 'Admin - Loading', payload: true });
 
-      await api.delete(`/users/${userId}`);
+      await api.delete(`/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       dispatch({ type: 'Admin - Delete User', payload: userId });
 
@@ -272,6 +294,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
 
       const { data } = await api.get<RolesResp>('/roles', {
         params: { order, sort, limit, offset },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       dispatch({ type: 'Admin - Get Roles', payload: data });
@@ -342,6 +365,11 @@ export const AdminProvider: FC<Props> = ({ children }) => {
   const clearSuccessMessage = (): void => {
     dispatch({ type: 'Admin - Close Message' });
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) setToken(token);
+  }, [user?.id]);
 
   return (
     <AdminContext.Provider

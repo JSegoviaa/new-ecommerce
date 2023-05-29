@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 import { AppBar, Box, Button, Toolbar } from '@mui/material';
 
 import { AdminContext, AuthContext } from '../../contexts';
+import { isAdminRole } from '../../helpers/validRoles';
 
 const Navbar: FC = () => {
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout, user } = useContext(AuthContext);
   const { adminLogout } = useContext(AdminContext);
+
+  const isvalidAdmin = isAdminRole(user?.role.id);
 
   const handleLogout = (): void => {
     logout();
@@ -27,9 +30,11 @@ const Navbar: FC = () => {
           <Button>Subcategorías</Button>
         </Link>
 
-        <Link to="/usuarios">
-          <Button>Usuarios</Button>
-        </Link>
+        {isvalidAdmin ? (
+          <Link to="/usuarios">
+            <Button>Usuarios</Button>
+          </Link>
+        ) : null}
 
         <Link to="/productos">
           <Button>Productos</Button>

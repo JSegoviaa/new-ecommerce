@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useReducer } from 'react';
+import { FC, useCallback, useEffect, useReducer, useState } from 'react';
 import axios, { AxiosError } from 'axios';
 
 import { api, authApi } from '../../api';
@@ -70,7 +70,9 @@ export const AuthProvider: FC<Props> = ({ children }) => {
     try {
       dispatch({ type: 'Auth - Loading', payload: true });
 
-      const res = await authApi.get<LoginResp>('/auth/renew-jwt');
+      const res = await authApi.get<LoginResp>('/auth/renew-jwt', {
+        headers: { Authorization: 'Bearer ' + token },
+      });
 
       dispatch({ type: 'Auth - Login', payload: res.data });
 
@@ -84,7 +86,7 @@ export const AuthProvider: FC<Props> = ({ children }) => {
         dispatch({ type: 'Auth - Error', payload: err.response?.data });
       }
     }
-  }, []);
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ ...state, login, logout, renewToken }}>
