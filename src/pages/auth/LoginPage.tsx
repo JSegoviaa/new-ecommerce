@@ -6,12 +6,14 @@ import { AuthContext } from '../../contexts';
 import { LoginData } from '../../interfaces';
 import { AlertMsg } from '../../components';
 import { title } from '../../constants';
+import { isEmail } from '../../helpers';
 
 const LoginPage: FC = () => {
   const { login, error } = useContext(AuthContext);
   const { register, handleSubmit, formState } = useForm<LoginData>({
     mode: 'onChange',
   });
+  const { isValid, errors } = formState;
 
   const onSubmit = async (e: LoginData): Promise<void> => await login(e);
 
@@ -38,9 +40,13 @@ const LoginPage: FC = () => {
           label="Correo electrónico"
           type="email"
           autoComplete="off"
+          fullWidth
           {...register('email', {
             required: 'El correo electrónico es obligatorio.',
+            validate: isEmail,
           })}
+          helperText={errors.email?.message}
+          error={!!errors.email}
         />
         <br />
         <br />
@@ -48,14 +54,16 @@ const LoginPage: FC = () => {
           label="Contraseña"
           type="password"
           autoComplete="off"
+          fullWidth
           {...register('password', {
             required: 'La contraseña es obligatoria.',
-            minLength: 6,
           })}
+          error={!!errors.password}
+          helperText={errors.password?.message}
         />
         <br />
         <br />
-        <Button disabled={!formState.isValid} type="submit">
+        <Button disabled={!isValid} type="submit">
           Iniciar sesión
         </Button>
         <br />
