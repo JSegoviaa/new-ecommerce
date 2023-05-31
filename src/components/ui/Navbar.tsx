@@ -9,7 +9,7 @@ const Navbar: FC = () => {
   const { isLoggedIn, logout, user } = useContext(AuthContext);
   const { adminLogout } = useContext(AdminContext);
 
-  const isvalidAdmin = isAdminRole(user?.role.id);
+  const isValidAdmin = isAdminRole(user?.role.id);
 
   const handleLogout = (): void => {
     logout();
@@ -30,7 +30,7 @@ const Navbar: FC = () => {
           <Button>Subcategorías</Button>
         </Link>
 
-        {isvalidAdmin ? (
+        {isValidAdmin ? (
           <Link to="/usuarios">
             <Button>Usuarios</Button>
           </Link>
@@ -44,9 +44,11 @@ const Navbar: FC = () => {
           <Button>Etiquetas</Button>
         </Link>
 
-        <Link to="/roles">
-          <Button>Roles</Button>
-        </Link>
+        {isValidAdmin ? (
+          <Link to="/roles">
+            <Button>Roles</Button>
+          </Link>
+        ) : null}
 
         <Link to="/variantes">
           <Button>Variantes</Button>
