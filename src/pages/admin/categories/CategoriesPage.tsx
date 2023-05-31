@@ -1,16 +1,20 @@
 import { FC, useEffect, useContext, useState } from 'react';
-import { Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Container, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 import { title } from '../../../constants';
-import { AdminContext } from '../../../contexts';
+import { AdminContext, AuthContext } from '../../../contexts';
 import {
   AlertMsg,
   CategoriesSelect,
   CategoriesTable,
 } from '../../../components';
 import { QueryData, OrderBy, Sort } from '../../../interfaces';
+import { isSuperAdminRole } from '../../../helpers';
 
 const CategoriesPage: FC = () => {
+  const { user } = useContext(AuthContext);
   const { getCategories, categories, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
@@ -18,6 +22,11 @@ const CategoriesPage: FC = () => {
   const [limit, setLimit] = useState(10);
   const [size, setSize] = useState(0);
   const [page, setPage] = useState(0);
+  const navigate = useNavigate();
+
+  const handleRedirect = () => navigate('/usuarios/crear');
+
+  const isValidAdmin = isSuperAdminRole(user?.role.id);
 
   const query: QueryData = { order, sort, offset, limit };
 
@@ -42,7 +51,6 @@ const CategoriesPage: FC = () => {
           ))
         ) : (
           <>
-            {' '}
             {categories.categories.length === 0 ? (
               <AlertMsg
                 msg="No existen categorías"
@@ -66,6 +74,10 @@ const CategoriesPage: FC = () => {
                   setPage={setPage}
                   size={size}
                 />
+
+                <Fab onClick={handleRedirect}>
+                  <AddIcon />
+                </Fab>
               </>
             )}
           </>
