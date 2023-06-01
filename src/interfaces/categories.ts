@@ -1,3 +1,4 @@
+import { User } from './auth';
 import { Image } from './images';
 
 export interface CategoriesResp {
@@ -41,3 +42,22 @@ export type OrderBy =
   | 'updatedAt'
   | 'isActive'
   | 'category.title';
+
+export interface CreateCategory {
+  title: string;
+  isActive: boolean;
+  isPublished: boolean;
+  image?: number;
+}
+
+export interface CreateCatResp {
+  title: string;
+  slug: string;
+  isActive: boolean;
+  isPublished: boolean;
+  createdBy: User;
+  updatedBy: User;
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+}

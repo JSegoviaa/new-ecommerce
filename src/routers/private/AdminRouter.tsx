@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Navbar } from '../../components';
 import {
   CategoriesPage,
+  CategoryPage,
   ColorsPage,
   CommentsPage,
   HomePage,
@@ -25,6 +26,8 @@ const AdminRouter: FC = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/categorias" element={<CategoriesPage />} />
+        <Route path="/categorias/crear" element={<CategoryPage />} />
+        <Route path="/categorias/:id" element={<CategoryPage />} />
         <Route path="/comentarios" element={<CommentsPage />} />
         <Route path="/productos" element={<ProductsPage />} />
         <Route path="/ratings" element={<RatingsPage />} />

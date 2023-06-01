@@ -24,7 +24,7 @@ const CategoriesPage: FC = () => {
   const [page, setPage] = useState(0);
   const navigate = useNavigate();
 
-  const handleRedirect = () => navigate('/usuarios/crear');
+  const handleRedirect = () => navigate('/categorias/crear');
 
   const isValidAdmin = isSuperAdminRole(user?.role.id);
 

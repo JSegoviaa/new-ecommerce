@@ -1,6 +1,7 @@
 import { createContext } from 'react';
 import {
   CategoriesResp,
+  CreateCategory,
   CreateUser,
   ProductsResp,
   QueryData,
@@ -26,6 +27,12 @@ interface ContextProps {
   error?: ResponseError;
   alert: { message: string; isOpen: boolean };
   getCategories: (query: QueryData) => Promise<void>;
+  createCategory: (category: CreateCategory) => Promise<number>;
+  updateCategory: (
+    categoryId: number,
+    category: CreateCategory
+  ) => Promise<boolean>;
+  deleteCategory: (categoryId: number) => Promise<void>;
   getSubcategories: (query: QueryData) => Promise<void>;
   getUsers: (query: QueryData) => Promise<void>;
   createUser: (user: CreateUser) => Promise<boolean>;
@@ -36,6 +43,8 @@ interface ContextProps {
   getRoles: (query: QueryData) => Promise<void>;
   getVariantColors: (query: QueryData) => Promise<void>;
   getVariantSizes: (query: QueryData) => Promise<void>;
+  uploadImages: (image: FormData) => Promise<number>;
+  getImage: (image: number) => Promise<number>;
   adminLogout: () => void;
   clearSuccessMessage: () => void;
 }

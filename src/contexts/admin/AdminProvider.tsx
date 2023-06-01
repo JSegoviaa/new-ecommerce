@@ -11,13 +11,17 @@ import axios, { AxiosError } from 'axios';
 import { api } from '../../api';
 import {
   CategoriesResp,
+  CreateCatResp,
+  CreateCategory,
   CreateUser,
+  Image,
   ProductsResp,
   QueryData,
   ResponseError,
   RolesResp,
   SubcatResp,
   TagsResp,
+  UploadImageResp,
   User,
   UserCreated,
   UsersResp,
@@ -87,6 +91,60 @@ export const AdminProvider: FC<Props> = ({ children }) => {
         dispatch({ type: 'Admin - Logout' });
         dispatch({ type: 'Admin - Error', payload: err.response?.data });
       }
+    }
+  };
+
+  const createCategory = async (category: CreateCategory): Promise<number> => {
+    try {
+      dispatch({ type: 'Admin - Loading', payload: true });
+
+      const { data } = await api.post<CreateCatResp>('categories', category, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      dispatch({ type: 'Admin - Loading', payload: false });
+      return data.id;
+    } catch (error) {
+      dispatch({ type: 'Admin - Loading', payload: false });
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Logout' });
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+      }
+      return 0;
+    }
+  };
+
+  const updateCategory = async (
+    categoryId: number,
+    category: CreateCategory
+  ): Promise<boolean> => {
+    try {
+      dispatch({ type: 'Admin - Loading', payload: true });
+      await api.put(`categories/${categoryId}`, category, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      dispatch({ type: 'Admin - Loading', payload: false });
+
+      return true;
+    } catch (error) {
+      dispatch({ type: 'Admin - Loading', payload: false });
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Logout' });
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+      }
+      return false;
+    }
+  };
+
+  const deleteCategory = async (categoryId: number): Promise<void> => {
+    try {
+      dispatch({ type: 'Admin - Loading', payload: true });
+      dispatch({ type: 'Admin - Loading', payload: false });
+    } catch (error) {
+      dispatch({ type: 'Admin - Loading', payload: false });
     }
   };
 
@@ -360,6 +418,52 @@ export const AdminProvider: FC<Props> = ({ children }) => {
     }
   };
 
+  const uploadImages = async (image: FormData): Promise<number> => {
+    try {
+      dispatch({ type: 'Admin - Loading', payload: true });
+
+      const { data } = await api.post<UploadImageResp>('/images', image, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      dispatch({ type: 'Admin - Loading', payload: false });
+      return data.version;
+    } catch (error) {
+      dispatch({ type: 'Admin - Loading', payload: false });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Logout' });
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+      }
+      return 0;
+    }
+  };
+
+  const getImage = async (image: number): Promise<number> => {
+    try {
+      dispatch({ type: 'Admin - Loading', payload: true });
+
+      const { data } = await api.get<Image>('images', {
+        params: { version: image },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      dispatch({ type: 'Admin - Loading', payload: false });
+
+      return data.id;
+    } catch (error) {
+      dispatch({ type: 'Admin - Loading', payload: false });
+
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<ResponseError>;
+        dispatch({ type: 'Admin - Logout' });
+        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+      }
+      return 0;
+    }
+  };
+
   const adminLogout = (): void => dispatch({ type: 'Admin - Logout' });
 
   const clearSuccessMessage = (): void => {
@@ -376,6 +480,9 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       value={{
         ...state,
         getCategories,
+        createCategory,
+        updateCategory,
+        deleteCategory,
         adminLogout,
         getSubcategories,
         getUsers,
@@ -387,6 +494,8 @@ export const AdminProvider: FC<Props> = ({ children }) => {
         getRoles,
         getVariantColors,
         getVariantSizes,
+        uploadImages,
+        getImage,
         clearSuccessMessage,
       }}
     >
