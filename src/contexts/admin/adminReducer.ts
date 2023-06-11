@@ -13,7 +13,7 @@ import {
   VariantSizesResp,
 } from '../../interfaces';
 
-type AdminActionsType =
+export type AdminActionsType =
   | { type: 'Admin - Loading'; payload: boolean }
   | { type: 'Admin - Logout' }
   | { type: 'Admin - Error'; payload: ResponseError | undefined }

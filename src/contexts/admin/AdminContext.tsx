@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, Dispatch } from 'react';
 import {
   CategoriesResp,
   CreateCategory,
@@ -14,6 +14,7 @@ import {
   VariantColorsResp,
   VariantSizesResp,
 } from '../../interfaces';
+import { AdminActionsType } from './adminReducer';
 
 interface ContextProps {
   isLoading: boolean;
@@ -47,6 +48,7 @@ interface ContextProps {
   getImage: (image: number) => Promise<number>;
   adminLogout: () => void;
   clearSuccessMessage: () => void;
+  dispatch: Dispatch<AdminActionsType>;
 }
 
 export const AdminContext = createContext({} as ContextProps);

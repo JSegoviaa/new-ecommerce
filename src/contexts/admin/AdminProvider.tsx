@@ -131,6 +131,8 @@ export const AdminProvider: FC<Props> = ({ children }) => {
       });
       dispatch({ type: 'Admin - Loading', payload: false });
 
+      dispatch({ type: 'Admin - Clear Error' });
+
       return true;
     } catch (error) {
       dispatch({ type: 'Admin - Loading', payload: false });
@@ -483,6 +485,7 @@ export const AdminProvider: FC<Props> = ({ children }) => {
     <AdminContext.Provider
       value={{
         ...state,
+        dispatch,
         getCategories,
         createCategory,
         updateCategory,

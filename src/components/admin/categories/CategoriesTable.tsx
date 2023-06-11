@@ -28,6 +28,7 @@ import { AdminContext, AuthContext } from '../../../contexts';
 import { useState } from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { SnackbarAlert } from '../../ui';
 
 interface Props {
   categories: CategoriesResp;
@@ -42,11 +43,11 @@ interface Props {
 const CategoriesTable: FC<Props> = (props) => {
   const { categories, limit, page, setOffset, setLimit, setPage, size } = props;
   const { user } = useContext(AuthContext);
-  const { updateCategory, deleteCategory } = useContext(AdminContext);
+  const { updateCategory, alert, clearSuccessMessage, dispatch } =
+    useContext(AdminContext);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<Category>();
-  const [openDialog, setOpenDialog] = useState(false);
 
   const navigate = useNavigate();
 
@@ -89,15 +90,6 @@ const CategoriesTable: FC<Props> = (props) => {
     setSelectedCategory(category);
   };
 
-  const onOpenDialog = (): void => {
-    setOpenDialog(true);
-  };
-
-  const onCloseDialog = (): void => {
-    setOpenDialog(false);
-    onClosePopup();
-  };
-
   const onIsActiveCategory = async (): Promise<void> => {
     onClosePopup();
     if (selectedCategory) {
@@ -107,6 +99,10 @@ const CategoriesTable: FC<Props> = (props) => {
         isPublished: rest.isPublished,
         title: rest.title,
         image: rest.image.id,
+      });
+      dispatch({
+        type: 'Admin - Open Message',
+        payload: 'La categoría se ha actualizado correctamente',
       });
     }
   };
@@ -121,7 +117,15 @@ const CategoriesTable: FC<Props> = (props) => {
         title: rest.title,
         image: rest.image.id,
       });
+      dispatch({
+        type: 'Admin - Open Message',
+        payload: 'La categoría se ha actualizado correctamente',
+      });
     }
+  };
+
+  const onCloseSnackbar = (): void => {
+    clearSuccessMessage();
   };
 
   return (
@@ -211,7 +215,7 @@ const CategoriesTable: FC<Props> = (props) => {
 
           <Button variant="text" onClick={onIsPublishedCategory} sx={{ p: 2 }}>
             {selectedCategory?.isPublished
-              ? 'Cancelar publicación'
+              ? 'Ocultar categoría'
               : 'Publicar categoría'}
           </Button>
 
@@ -220,11 +224,6 @@ const CategoriesTable: FC<Props> = (props) => {
             {selectedCategory?.isActive
               ? 'Desactivar categoría'
               : 'Activar categoría'}
-          </Button>
-
-          <Divider />
-          <Button variant="text" onClick={onOpenDialog} sx={{ p: 2 }}>
-            Eliminar categoría
           </Button>
         </Popover>
       </Table>
@@ -247,6 +246,14 @@ const CategoriesTable: FC<Props> = (props) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       ) : null}
+      <SnackbarAlert
+        autoHideDuration={6000}
+        message={alert.message}
+        open={alert.isOpen}
+        type="success"
+        onClose={onCloseSnackbar}
+        position={{ horizontal: 'right', vertical: 'top' }}
+      />
     </TableContainer>
   );
 };

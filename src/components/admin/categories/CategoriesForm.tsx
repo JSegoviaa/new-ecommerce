@@ -6,11 +6,17 @@ import { useForm } from 'react-hook-form';
 import { CreateCategory } from '../../../interfaces';
 import { AdminContext } from '../../../contexts';
 import { Category } from '../../../interfaces/categories';
-import { formatedDate } from '../../../helpers';
+import { CreatedInfo } from '../../ui/info';
 
 const CategoriesForm: FC = () => {
-  const { createCategory, uploadImages, updateCategory, getImage, categories } =
-    useContext(AdminContext);
+  const {
+    createCategory,
+    uploadImages,
+    updateCategory,
+    getImage,
+    categories,
+    dispatch,
+  } = useContext(AdminContext);
   const [picture, setPicture] = useState<string | Blob>('');
   const [url, setUrl] = useState('');
   const [category, setCategory] = useState<Category>();
@@ -69,6 +75,10 @@ const CategoriesForm: FC = () => {
             image: imageId,
           });
           if (resUpdate) navigate('/categorias');
+          dispatch({
+            type: 'Admin - Open Message',
+            payload: 'La categoría se ha actualizado correctamente',
+          });
           return;
         }
       }
@@ -80,6 +90,10 @@ const CategoriesForm: FC = () => {
         image: category?.image.id,
       });
       navigate('/categorias');
+      dispatch({
+        type: 'Admin - Open Message',
+        payload: 'La categoría se ha actualizado correctamente',
+      });
       return;
     }
 
@@ -96,6 +110,10 @@ const CategoriesForm: FC = () => {
         const imageId = await getImage(resPicture);
         const resUpdate = await updateCategory(res, { ...e, image: imageId });
         if (resUpdate) navigate('/categorias');
+        dispatch({
+          type: 'Admin - Open Message',
+          payload: 'La categoría se ha creado correctamente',
+        });
         return;
       }
     }
@@ -173,23 +191,20 @@ const CategoriesForm: FC = () => {
         </Button>
         <br />
         <br />
-        <Button disabled={!isValid} type="submit">
+        <Button disabled={!isValid || !picture} type="submit">
           {isEditCategory ? 'Actualizar categoría' : 'Crear categoría'}
         </Button>
       </form>
       {isEditCategory ? (
-        <>
-          <div>
-            Categoría creada por {category?.createdBy.firstName}{' '}
-            {category?.createdBy.lastName} el{' '}
-            {formatedDate(category!.createdAt)}
-          </div>
-          <div>
-            Categoría actializada por {category?.createdBy.firstName}{' '}
-            {category?.createdBy.lastName} el{' '}
-            {formatedDate(category!.updatedAt)}
-          </div>
-        </>
+        <CreatedInfo
+          type="Categoría"
+          action1="creada"
+          action2="actualizada"
+          createdAt={category!.createdAt}
+          updatedAt={category!.updatedAt}
+          firstName={category?.createdBy.firstName}
+          lastName={category?.createdBy.lastName}
+        />
       ) : null}
     </>
   );
