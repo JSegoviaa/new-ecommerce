@@ -69,30 +69,33 @@ export const AdminProvider: FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(adminReducer, ADMIN_INITIAL_STATE);
   const [token, setToken] = useState('');
 
-  const getCategories = async (query: QueryData): Promise<void> => {
-    const { order, sort, limit, offset } = query;
+  const getCategories = useCallback(
+    async (query: QueryData): Promise<void> => {
+      const { order, sort, limit, offset } = query;
 
-    try {
-      dispatch({ type: 'Admin - Loading', payload: true });
+      try {
+        dispatch({ type: 'Admin - Loading', payload: true });
 
-      const { data } = await api.get<CategoriesResp>('/categories', {
-        params: { order, sort, limit, offset },
-      });
+        const { data } = await api.get<CategoriesResp>('/categories', {
+          params: { order, sort, limit, offset },
+        });
 
-      dispatch({ type: 'Admin - Get Categories', payload: data });
+        dispatch({ type: 'Admin - Get Categories', payload: data });
 
-      dispatch({ type: 'Admin - Loading', payload: false });
-      dispatch({ type: 'Admin - Clear Error' });
-    } catch (error) {
-      dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Clear Error' });
+      } catch (error) {
+        dispatch({ type: 'Admin - Loading', payload: false });
 
-      if (axios.isAxiosError(error)) {
-        const err = error as AxiosError<ResponseError>;
-        dispatch({ type: 'Admin - Logout' });
-        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        if (axios.isAxiosError(error)) {
+          const err = error as AxiosError<ResponseError>;
+          dispatch({ type: 'Admin - Logout' });
+          dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        }
       }
-    }
-  };
+    },
+    [token]
+  );
 
   const createCategory = async (category: CreateCategory): Promise<number> => {
     try {
@@ -154,29 +157,32 @@ export const AdminProvider: FC<Props> = ({ children }) => {
     }
   };
 
-  const getSubcategories = async (query: QueryData): Promise<void> => {
-    const { order, sort, limit, offset } = query;
-    try {
-      dispatch({ type: 'Admin - Loading', payload: true });
+  const getSubcategories = useCallback(
+    async (query: QueryData): Promise<void> => {
+      const { order, sort, limit, offset } = query;
+      try {
+        dispatch({ type: 'Admin - Loading', payload: true });
 
-      const { data } = await api.get<SubcatResp>('/subcategories', {
-        params: { order, sort, limit, offset },
-      });
+        const { data } = await api.get<SubcatResp>('/subcategories', {
+          params: { order, sort, limit, offset },
+        });
 
-      dispatch({ type: 'Admin - Get Subcategories', payload: data });
+        dispatch({ type: 'Admin - Get Subcategories', payload: data });
 
-      dispatch({ type: 'Admin - Loading', payload: false });
-      dispatch({ type: 'Admin - Clear Error' });
-    } catch (error) {
-      dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Clear Error' });
+      } catch (error) {
+        dispatch({ type: 'Admin - Loading', payload: false });
 
-      if (axios.isAxiosError(error)) {
-        const err = error as AxiosError<ResponseError>;
-        dispatch({ type: 'Admin - Logout' });
-        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        if (axios.isAxiosError(error)) {
+          const err = error as AxiosError<ResponseError>;
+          dispatch({ type: 'Admin - Logout' });
+          dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        }
       }
-    }
-  };
+    },
+    [token]
+  );
 
   const getProducts = async (query: QueryData): Promise<void> => {
     const { order, sort, limit, offset } = query;
@@ -327,54 +333,61 @@ export const AdminProvider: FC<Props> = ({ children }) => {
     }
   };
 
-  const getTags = async (query: QueryData): Promise<void> => {
-    const { order, sort, limit, offset } = query;
-    try {
-      dispatch({ type: 'Admin - Loading', payload: true });
+  const getTags = useCallback(
+    async (query: QueryData): Promise<void> => {
+      const { order, sort, limit, offset } = query;
+      try {
+        dispatch({ type: 'Admin - Loading', payload: true });
 
-      const { data } = await api.get<TagsResp>('/tags', {
-        params: { order, sort, limit, offset },
-      });
+        const { data } = await api.get<TagsResp>('/tags', {
+          params: { order, sort, limit, offset },
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      dispatch({ type: 'Admin - Get Tags', payload: data });
+        dispatch({ type: 'Admin - Get Tags', payload: data });
 
-      dispatch({ type: 'Admin - Loading', payload: false });
-      dispatch({ type: 'Admin - Clear Error' });
-    } catch (error) {
-      dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Clear Error' });
+      } catch (error) {
+        dispatch({ type: 'Admin - Loading', payload: false });
 
-      if (axios.isAxiosError(error)) {
-        const err = error as AxiosError<ResponseError>;
-        dispatch({ type: 'Admin - Logout' });
-        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        if (axios.isAxiosError(error)) {
+          const err = error as AxiosError<ResponseError>;
+          dispatch({ type: 'Admin - Logout' });
+          dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        }
       }
-    }
-  };
+    },
+    [token]
+  );
 
-  const getRoles = async (query: QueryData): Promise<void> => {
-    const { order, sort, limit, offset } = query;
-    try {
-      dispatch({ type: 'Admin - Loading', payload: true });
+  const getRoles = useCallback(
+    async (query: QueryData): Promise<void> => {
+      const { order, sort, limit, offset } = query;
+      try {
+        dispatch({ type: 'Admin - Loading', payload: true });
 
-      const { data } = await api.get<RolesResp>('/roles', {
-        params: { order, sort, limit, offset },
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        const { data } = await api.get<RolesResp>('/roles', {
+          params: { order, sort, limit, offset },
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      dispatch({ type: 'Admin - Get Roles', payload: data });
+        dispatch({ type: 'Admin - Get Roles', payload: data });
 
-      dispatch({ type: 'Admin - Loading', payload: false });
-      dispatch({ type: 'Admin - Clear Error' });
-    } catch (error) {
-      dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Loading', payload: false });
+        dispatch({ type: 'Admin - Clear Error' });
+      } catch (error) {
+        dispatch({ type: 'Admin - Loading', payload: false });
 
-      if (axios.isAxiosError(error)) {
-        const err = error as AxiosError<ResponseError>;
-        dispatch({ type: 'Admin - Logout' });
-        dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        if (axios.isAxiosError(error)) {
+          const err = error as AxiosError<ResponseError>;
+          dispatch({ type: 'Admin - Logout' });
+          dispatch({ type: 'Admin - Error', payload: err.response?.data });
+        }
       }
-    }
-  };
+    },
+    [token]
+  );
 
   const getVariantColors = async (query: QueryData): Promise<void> => {
     const { order, sort, limit, offset } = query;
