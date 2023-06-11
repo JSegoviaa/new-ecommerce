@@ -4,11 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
 import { CreateCategory } from '../../../interfaces';
-import { AdminContext } from '../../../contexts';
+import { AdminContext, AuthContext } from '../../../contexts';
 import { Category } from '../../../interfaces/categories';
 import { CreatedInfo } from '../../ui/info';
+import { isValidRole } from '../../../helpers';
 
 const CategoriesForm: FC = () => {
+  const { user } = useContext(AuthContext);
   const {
     createCategory,
     uploadImages,
@@ -119,6 +121,8 @@ const CategoriesForm: FC = () => {
     }
   };
 
+  const isValidAdminRole = isValidRole(user?.role.id);
+
   useEffect(() => {
     if (params.id) {
       setIsEditCategory(true);
@@ -191,9 +195,14 @@ const CategoriesForm: FC = () => {
         </Button>
         <br />
         <br />
-        <Button disabled={!isValid || !picture} type="submit">
-          {isEditCategory ? 'Actualizar categoría' : 'Crear categoría'}
-        </Button>
+        {isValidAdminRole ? (
+          <Button
+            disabled={!isValid || !url || !isValidAdminRole}
+            type="submit"
+          >
+            {isEditCategory ? 'Actualizar categoría' : 'Crear categoría'}
+          </Button>
+        ) : null}
       </form>
       {isEditCategory ? (
         <CreatedInfo

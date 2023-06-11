@@ -11,7 +11,7 @@ import {
   CategoriesTable,
 } from '../../../components';
 import { QueryData, OrderBy, Sort } from '../../../interfaces';
-import { isSuperAdminRole } from '../../../helpers';
+import { isAdminRole } from '../../../helpers';
 
 const CategoriesPage: FC = () => {
   const { user } = useContext(AuthContext);
@@ -26,7 +26,7 @@ const CategoriesPage: FC = () => {
 
   const handleRedirect = () => navigate('/categorias/crear');
 
-  const isValidAdmin = isSuperAdminRole(user?.role.id);
+  const isValidAdminRole = isAdminRole(user?.role.id);
 
   const query: QueryData = { order, sort, offset, limit };
 
@@ -74,10 +74,11 @@ const CategoriesPage: FC = () => {
                   setPage={setPage}
                   size={size}
                 />
-
-                <Fab onClick={handleRedirect}>
-                  <AddIcon />
-                </Fab>
+                {isValidAdminRole ? (
+                  <Fab onClick={handleRedirect}>
+                    <AddIcon />
+                  </Fab>
+                ) : null}
               </>
             )}
           </>

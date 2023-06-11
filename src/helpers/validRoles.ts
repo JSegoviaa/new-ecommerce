@@ -1,5 +1,3 @@
-import { RoleId } from '../interfaces';
-
 export const isValidRole = (role: number | undefined): boolean => {
   return role === 1 || role === 2 || role === 3 ? true : false;
 };
