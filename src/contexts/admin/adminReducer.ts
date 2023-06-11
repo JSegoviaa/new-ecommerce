@@ -1,6 +1,7 @@
 import { AdminState } from './';
 import {
   CategoriesResp,
+  CreateCategory,
   ProductsResp,
   ResponseError,
   RolesResp,
@@ -20,6 +21,10 @@ type AdminActionsType =
   | { type: 'Admin - Close Message' }
   | { type: 'Admin - Clear Error' }
   | { type: 'Admin - Get Categories'; payload: CategoriesResp }
+  | {
+      type: 'Admin - Update Category';
+      payload: { categoryId: number; category: CreateCategory };
+    }
   | { type: 'Admin - Get Subcategories'; payload: SubcatResp }
   | { type: 'Admin - Get Users'; payload: UsersResp }
   | { type: 'Admin - Update User'; payload: User }
@@ -56,6 +61,25 @@ export const adminReducer = (
         categories: {
           total: action.payload.total,
           categories: action.payload.categories,
+        },
+      };
+
+    case 'Admin - Update Category':
+      return {
+        ...state,
+        categories: {
+          ...state.categories,
+          categories: state.categories.categories.map((category) => {
+            if (category.id === action.payload.categoryId) {
+              return {
+                ...category,
+                isActive: action.payload.category.isActive,
+                isPublished: action.payload.category.isPublished,
+                title: action.payload.category.title,
+              };
+            }
+            return category;
+          }),
         },
       };
 

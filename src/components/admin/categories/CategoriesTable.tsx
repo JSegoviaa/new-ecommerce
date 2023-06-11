@@ -101,22 +101,26 @@ const CategoriesTable: FC<Props> = (props) => {
   const onIsActiveCategory = async (): Promise<void> => {
     onClosePopup();
     if (selectedCategory) {
-      // await updateUser({
-      //   ...selectedUser,
-      //   isActive: !selectedUser.isActive,
-      //   role: { ...selectedUser.role, id: selectedUser.role.id },
-      // });
+      const { createdAt, updatedAt, id, slug, ...rest } = selectedCategory;
+      await updateCategory(selectedCategoryId, {
+        isActive: !selectedCategory.isActive,
+        isPublished: rest.isPublished,
+        title: rest.title,
+        image: rest.image.id,
+      });
     }
   };
 
   const onIsPublishedCategory = async (): Promise<void> => {
     onClosePopup();
     if (selectedCategory) {
-      // await updateUser({
-      //   ...selectedUser,
-      //   isActive: !selectedUser.isActive,
-      //   role: { ...selectedUser.role, id: selectedUser.role.id },
-      // });
+      const { createdAt, updatedAt, id, slug, ...rest } = selectedCategory;
+      await updateCategory(selectedCategoryId, {
+        isActive: rest.isActive,
+        isPublished: !selectedCategory.isPublished,
+        title: rest.title,
+        image: rest.image.id,
+      });
     }
   };
 

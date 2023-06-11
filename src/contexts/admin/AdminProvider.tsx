@@ -125,6 +125,10 @@ export const AdminProvider: FC<Props> = ({ children }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      dispatch({
+        type: 'Admin - Update Category',
+        payload: { categoryId, category },
+      });
       dispatch({ type: 'Admin - Loading', payload: false });
 
       return true;
