@@ -15,9 +15,17 @@ export interface Subcategory {
   updatedAt: string;
   category: SCategory;
   image: Image;
+  createdBy: UserSCategory;
+  updatedBy: UserSCategory;
 }
 
 export interface SCategory {
   title: string;
   slug: string;
+}
+
+export interface UserSCategory {
+  id: number;
+  firstName: string;
+  lastName: string;
 }

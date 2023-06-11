@@ -23,7 +23,7 @@ import {
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import { CategoriesResp, Category } from '../../../interfaces';
-import { formatedDate, isValidRole } from '../../../helpers';
+import { formatedDate } from '../../../helpers';
 import { AdminContext, AuthContext } from '../../../contexts';
 import { useState } from 'react';
 import { Button } from '@mui/material';

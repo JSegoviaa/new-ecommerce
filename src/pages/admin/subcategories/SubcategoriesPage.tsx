@@ -1,5 +1,7 @@
 import { FC, useEffect, useContext, useState } from 'react';
-import { Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Container, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 import {
   AlertMsg,
@@ -7,10 +9,12 @@ import {
   SubcategoriesTable,
 } from '../../../components';
 import { title } from '../../../constants';
-import { AdminContext } from '../../../contexts';
+import { AdminContext, AuthContext } from '../../../contexts';
 import { OrderBy, QueryData, Sort } from '../../../interfaces';
+import { isAdminRole } from '../../../helpers';
 
 const SubcategoriesPage: FC = () => {
+  const { user } = useContext(AuthContext);
   const { getSubcategories, subcategories, error } = useContext(AdminContext);
   const [sort, setSort] = useState<Sort>('ASC');
   const [order, setOrder] = useState<OrderBy>('id');
@@ -18,8 +22,13 @@ const SubcategoriesPage: FC = () => {
   const [limit, setLimit] = useState(10);
   const [size, setSize] = useState(0);
   const [page, setPage] = useState(0);
+  const navigate = useNavigate();
 
   const query: QueryData = { order, sort, offset, limit };
+
+  const handleRedirect = () => navigate('/subcategorias/crear');
+
+  const isValidAdminRole = isAdminRole(user?.role.id);
 
   useEffect(() => {
     getSubcategories(query);
@@ -65,6 +74,11 @@ const SubcategoriesPage: FC = () => {
                   setPage={setPage}
                   size={size}
                 />
+                {isValidAdminRole ? (
+                  <Fab onClick={handleRedirect}>
+                    <AddIcon />
+                  </Fab>
+                ) : null}
               </>
             )}
           </>

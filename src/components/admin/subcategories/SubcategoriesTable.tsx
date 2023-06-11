@@ -5,11 +5,15 @@ import {
   MouseEvent,
   SetStateAction,
   useContext,
+  useState,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
+  Button,
   Divider,
   IconButton,
   Paper,
+  Popover,
   Table,
   TableBody,
   TableCell,
@@ -19,10 +23,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import { SubcatResp } from '../../../interfaces';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { SubcatResp, Subcategory } from '../../../interfaces';
 import { AuthContext } from '../../../contexts';
-import { formatedDate, isValidRole } from '../../../helpers';
+import { formatedDate } from '../../../helpers';
 
 interface Props {
   subcategories: SubcatResp;
@@ -37,8 +41,12 @@ interface Props {
 const SubcategoriesTable: FC<Props> = (props) => {
   const { subcategories, limit, page, setOffset, setLimit, setPage, size } =
     props;
-
   const { user } = useContext(AuthContext);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(0);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory>();
+
+  const navigate = useNavigate();
 
   const handleChangePage = (
     _event: MouseEvent<HTMLButtonElement> | null,
@@ -49,10 +57,42 @@ const SubcategoriesTable: FC<Props> = (props) => {
     setOffset(value * limit);
   };
 
+  const onOpenPopup = (event: MouseEvent<HTMLButtonElement>): void => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const onClosePopup = (): void => {
+    setAnchorEl(null);
+  };
+
   const handleChangeRowsPerPage = (e: ChangeEvent<HTMLInputElement>): void => {
     setLimit(Number(e.target.value));
     setOffset(0);
     setPage(0);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  const onEditSubcategory = (): void => {
+    onClosePopup();
+    navigate(`/subcategorias/${selectedSubcategoryId}`);
+  };
+
+  const onSelectSubcategoryId = (subcategoryId: number): void => {
+    setSelectedSubcategoryId(subcategoryId);
+  };
+
+  const onSelectSubcategory = (subcategory: Subcategory): void => {
+    setSelectedSubcategory(subcategory);
+  };
+
+  const onIsActiveCategory = async (): Promise<void> => {
+    onClosePopup();
+  };
+
+  const onIsPublishedCategory = async (): Promise<void> => {
+    onClosePopup();
   };
 
   return (
@@ -67,13 +107,9 @@ const SubcategoriesTable: FC<Props> = (props) => {
             <TableCell align="center">Categoría</TableCell>
             <TableCell align="center">Fecha de creación</TableCell>
             <TableCell align="center">Fecha de actualización</TableCell>
-
-            {isValidRole(user?.role.id) ? (
-              <TableCell align="center">Editar</TableCell>
-            ) : null}
-
             <TableCell align="center">Publicado</TableCell>
             <TableCell align="center">Activo</TableCell>
+            <TableCell align="center"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -108,23 +144,55 @@ const SubcategoriesTable: FC<Props> = (props) => {
                 {formatedDate(sub.updatedAt)}
               </TableCell>
 
-              {isValidRole(user?.role.id) ? (
-                <TableCell align="center" component="th" scope="row">
-                  <IconButton>
-                    <EditIcon />
-                  </IconButton>
-                </TableCell>
-              ) : null}
-
               <TableCell align="center" component="th" scope="row">
                 <Typography>{sub.isPublished ? 'Sí' : 'No'}</Typography>
               </TableCell>
               <TableCell align="center" component="th" scope="row">
                 <Typography>{sub.isActive ? 'Sí' : 'No'}</Typography>
               </TableCell>
+              <TableCell align="center" component="th" scope="row">
+                <IconButton
+                  onClick={(e) => {
+                    onOpenPopup(e);
+                    onSelectSubcategoryId(sub.id);
+                    onSelectSubcategory(sub);
+                  }}
+                  aria-describedby={id}
+                >
+                  <SettingsIcon />
+                </IconButton>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
+        <Popover
+          open={open}
+          id={id}
+          anchorEl={anchorEl}
+          onClose={onClosePopup}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+        >
+          <Button variant="text" onClick={onEditSubcategory} sx={{ p: 2 }}>
+            Editar categoría
+          </Button>
+          <Divider />
+
+          <Button variant="text" onClick={onIsPublishedCategory} sx={{ p: 2 }}>
+            {selectedSubcategory?.isPublished
+              ? 'Ocultar subcategoría'
+              : 'Publicar subcategoría'}
+          </Button>
+
+          <Divider />
+          <Button variant="text" onClick={onIsActiveCategory} sx={{ p: 2 }}>
+            {selectedSubcategory?.isActive
+              ? 'Desactivar subcategoría'
+              : 'Activar subcategoría'}
+          </Button>
+        </Popover>
       </Table>
 
       <Divider />
